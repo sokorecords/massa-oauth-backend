@@ -7,13 +7,10 @@ const app = express();
 
 // Configuration CORS - Permet les requêtes depuis votre site DeWeb
 app.use(cors({
-  origin: [
-    'https://spreadmassaquest.deweb.half-red.net',
-    'http://localhost:3000',
-    'http://localhost:8080'
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS']
+  origin: '*', // Accepte toutes les origines (temporaire pour tester)
+  credentials: false, // IMPORTANT : mettre false quand origin est '*'
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
@@ -87,4 +84,5 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`🚀 Massa OAuth Backend démarré sur le port ${PORT}`);
   console.log(`📍 URL: http://localhost:${PORT}`);
+
 });
