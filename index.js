@@ -79,6 +79,42 @@ app.post('/api/oauth/token', async (req, res) => {
     });
   }
 });
+// Endpoint pour récupérer le profil utilisateur
+app.post('/api/user/profile', async (req, res) => {
+  const { access_token } = req.body;
+
+  if (!access_token) {
+    return res.status(400).json({ 
+      error: 'Missing access_token' 
+    });
+  }
+
+  try {
+    console.log('🔄 Récupération du profil utilisateur...');
+
+    const profileResponse = await fetch("https://api.x.com/2/users/me?user.fields=profile_image_url", {
+      headers: { 
+        Authorization: `Bearer ${access_token}` 
+      }
+    });
+
+    const data = await profileResponse.json();
+
+    if (!profileResponse.ok) {
+      console.error('❌ Erreur profil X API:', data);
+      return res.status(profileResponse.status).json(data);
+    }
+
+    console.log('✅ Profil récupéré avec succès');
+    res.json(data);
+  } catch (err) {
+    console.error('❌ Erreur serveur profil:', err);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: err.message 
+    });
+  }
+});
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
@@ -86,3 +122,4 @@ app.listen(PORT, () => {
   console.log(`📍 URL: http://localhost:${PORT}`);
 
 });
+
