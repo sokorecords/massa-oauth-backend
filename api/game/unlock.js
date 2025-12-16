@@ -1,6 +1,7 @@
-// api/game/unlock.js - Débloquer un fragment déjà révélé (après repost)
+// api/game/unlock.js - Débloquer un fragment déjà révélé (après repost) (avec Vercel KV)
 
-import { gameState, getTodayUTC, initializeDay, PRIVATE_KEY_CHARS } from './today.js';
+import { getTodayUTC, getGameState, saveGameState, initializeDay, PRIVATE_KEY_CHARS } from './today.js';
+import { kv } from '@vercel/kv';
 
 export default async function handler(req, res) {
   // CORS
@@ -26,11 +27,12 @@ export default async function handler(req, res) {
     }
 
     // Initialiser le jour si nécessaire
-    initializeDay();
+    const gameState = await initializeDay();
 
     // Vérifier qu'il y a bien un message du jour révélé
     if (!gameState.messageOfTheDay) {
       return res.status(400).json({
+        success: false,
         error: 'No fragment has been revealed today yet.'
       });
     }
@@ -38,6 +40,14 @@ export default async function handler(req, res) {
     const motd = gameState.messageOfTheDay;
 
     console.log(`🔓 Déverrouillage demandé par userId=${userId}`);
+
+    // Enregistrer que cet utilisateur a déverrouillé ce fragment
+    const unlockKey = `unlock:${userId}:${motd.fragmentIndex}`;
+    await kv.set(unlockKey, {
+      fragmentIndex: motd.fragmentIndex,
+      unlockedAt: new Date().toISOString(),
+      tweetUrl
+    });
 
     // Retourner le fragment
     return res.status(200).json({
@@ -49,12 +59,16 @@ export default async function handler(req, res) {
       messageOfTheDay: {
         text: motd.text,
         revealedBy: motd.revealedBy,
-        timestamp: motd.timestamp
+        timestamp: motd.timestamp,
+        originalTweetUrl: motd.tweetUrl
       },
-      message: "Fragment unlocked! This fragment is one character of a private key."
+      message: "Fragment unlocked! This fragment is one character of a private key. Fragments are revealed out of order."
     });
   } catch (err) {
     console.error('Erreur /api/game/unlock:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ 
+      error: 'Internal server error',
+      details: err.message 
+    });
   }
 }
