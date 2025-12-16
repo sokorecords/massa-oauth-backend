@@ -1,45 +1,127 @@
+// index.js - Backend proxy pour échanger les tokens OAuth X
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
-const { kv } = require('@vercel/kv'); // Connexion Upstash Redis
 
 const app = express();
 
-app.use(cors({ origin: '*', credentials: false }));
+// Configuration CORS - Permet les requêtes depuis votre site DeWeb
+app.use(cors({
+  origin: '*', // Accepte toutes les origines (temporaire pour tester)
+  credentials: false, // IMPORTANT : mettre false quand origin est '*'
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const CLIENT_ID = "SHFXVndGU2ZBRk1GbzlpWlFJR1Q6MTpjaQ";
-const ADMIN_WEBHOOK_URL = process.env.ADMIN_WEBHOOK_URL;
 
-const TRUTHS_POOL = [
-  "Massa scales to 10,000+ TPS without sacrificing decentralization. #DeWeb @massachain $MAS",
-  "No AWS. No shutdowns. Massa cannot be stopped. This is real freedom. #DeWeb @massachain $MAS",
-  "Websites that live forever on-chain. That's the DeWeb by Massa. #DeWeb @massachain $MAS",
-  "300+ nodes. Try censoring Massa. You can't. #SpreadMassaQuest @massachain $MAS",
-  "The future of the internet is autonomous and uncensorable. #Massa @massachain $MAS"
-];
+// Route de test
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'Massa OAuth Backend is running!' 
+  });
+});
 
-// --- GESTION DU JEU ---
-async function getGameState() {
-  const today = new Date().toISOString().split('T')[0];
-  let state = await kv.get('gameState');
+// Endpoint pour échanger le code contre un token
+app.post('/api/oauth/token', async (req, res) => {
+  console.log('📥 Requête reçue:', req.body);
+  
+  const { code, redirect_uri, code_verifier } = req.body;
 
-  if (!state || state.lastResetDate !== today) {
-    state = {
-      lastResetDate: today,
-      winningMessageId: Math.floor(Math.random() * TRUTHS_POOL.length),
-      isRevealed: false,
-      revealedBy: null,
-      winningTweetUrl: null,
-      winningFragmentChar: "M" // Ton indice secret du jour
-    };
-    await kv.set('gameState', state);
+  if (!code || !redirect_uri || !code_verifier) {
+    console.error('❌ Paramètres manquants');
+    return res.status(400).json({ 
+      error: 'Missing required parameters',
+      received: { code: !!code, redirect_uri: !!redirect_uri, code_verifier: !!code_verifier }
+    });
   }
-  return state;
-}
 
-// --- TES ROUTES OAUTH (PRÉSERVÉES) ---
+  try {
+    // Construction du body
+    const bodyPairs = [
+      "grant_type=authorization_code",
+      "client_id=" + encodeURIComponent(CLIENT_ID),
+      "code=" + encodeURIComponent(code),
+      "redirect_uri=" + encodeURIComponent(redirect_uri),
+      "code_verifier=" + encodeURIComponent(code_verifier)
+    ];
+    const bodyString = bodyPairs.join("&");
+
+    console.log('🔄 Envoi vers X API...');
+
+    // Requête vers l'API X
+    const tokenResponse = await fetch("https://api.x.com/2/oauth2/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: bodyString
+    });
+
+    const data = await tokenResponse.json();
+
+    if (!tokenResponse.ok) {
+      console.error('❌ Erreur X API:', data);
+      return res.status(tokenResponse.status).json(data);
+    }
+
+    console.log('✅ Token obtenu avec succès');
+    res.json(data);
+  } catch (err) {
+    console.error('❌ Erreur serveur:', err);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: err.message 
+    });
+  }
+});
+// Endpoint pour récupérer le profil utilisateur
+app.post('/api/user/profile', async (req, res) => {
+  const { access_token } = req.body;
+
+  if (!access_token) {
+    return res.status(400).json({ 
+      error: 'Missing access_token' 
+    });
+  }
+
+  try {
+    console.log('🔄 Récupération du profil utilisateur...');
+
+    const profileResponse = await fetch("https://api.x.com/2/users/me?user.fields=profile_image_url", {
+      headers: { 
+        Authorization: `Bearer ${access_token}` 
+      }
+    });
+
+    const data = await profileResponse.json();
+
+    if (!profileResponse.ok) {
+      console.error('❌ Erreur profil X API:', data);
+      return res.status(profileResponse.status).json(data);
+    }
+
+    console.log('✅ Profil récupéré avec succès');
+    res.json(data);
+  } catch (err) {
+    console.error('❌ Erreur serveur profil:', err);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: err.message 
+    });
+  }
+});
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`🚀 Massa OAuth Backend démarré sur le port ${PORT}`);
+  console.log(`📍 URL: http://localhost:${PORT}`);
+
+});
 
 app.post('/api/oauth/token', async (req, res) => {
   const { code, redirect_uri, code_verifier } = req.body;
@@ -132,3 +214,4 @@ app.post('/api/game/submit', async (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Serveur prêt sur ${PORT}`));
+
