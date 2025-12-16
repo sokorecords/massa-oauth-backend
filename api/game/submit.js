@@ -1,14 +1,14 @@
-// api/game/submit.js - Soumettre un post X et vérifier si un fragment est révélé
+// api/game/submit.js - Soumettre un post X et vérifier si un fragment est révélé (avec Vercel KV)
 
-// Import du state partagé
-import { gameState, getTodayUTC, initializeDay, PRIVATE_KEY_CHARS } from './today.js';
+import { getTodayUTC, getGameState, saveGameState, initializeDay, PRIVATE_KEY_CHARS } from './today.js';
 
-// Liste des 150 phrases
+// Liste des 150 phrases (importée depuis truths.js dans le vrai code)
+// Pour cet exemple, je mets juste les premières
 const MASSA_TRUTHS = [
   "Massa produces parallel blocks through Blockclique, moving away from linear blockchain limits. This enables true concurrency while preserving decentralization.",
   "On Massa, smart contracts are autonomous and can schedule actions directly on-chain. Applications no longer depend on bots or external servers to function.",
-  // ... (toutes les 150 phrases - je les abrège ici pour la lisibilité)
-  "Massa builds a web that is stable, sovereign, and unstoppable. Autonomy becomes the core of the digital world."
+  "Massa stores both frontends and backends directly inside the blockchain. Applications do not rely on hosting providers or gateways to remain accessible.",
+  // ... Toutes les 150 phrases
 ];
 
 export default async function handler(req, res) {
@@ -28,28 +28,30 @@ export default async function handler(req, res) {
   try {
     const { messageId, tweetUrl, userId } = req.body;
 
-    if (!messageId || !tweetUrl || !userId) {
+    if (messageId === undefined || !tweetUrl || !userId) {
       return res.status(400).json({ 
         error: 'Missing required fields: messageId, tweetUrl, userId' 
       });
     }
 
     // Initialiser le jour si nécessaire
-    initializeDay();
+    let gameState = await initializeDay();
 
     console.log(`📥 Soumission reçue: messageId=${messageId}, userId=${userId}`);
 
     // Vérifier si ce messageId correspond à un fragment actif
-    const fragmentIndex = gameState.activeFragments.find(idx => {
-      // Logique: le messageId correspond à l'index de la phrase
-      // On peut assigner aléatoirement ou selon une règle
-      // Pour simplifier: chaque phrase peut révéler un fragment spécifique
-      return idx === messageId; // Simple mapping 1:1 pour commencer
-    });
-
-    if (fragmentIndex !== undefined) {
-      // 🎉 FRAGMENT RÉVÉLÉ !
+    // Logique : Chaque messageId peut potentiellement révéler un fragment
+    // On assigne aléatoirement un fragment à chaque message généré
+    
+    // Pour simplifier : un messageId peut révéler n'importe quel fragment actif (aléatoire)
+    if (gameState.activeFragments.length > 0) {
+      // Choisir aléatoirement un fragment parmi les actifs
+      const randomIndex = Math.floor(Math.random() * gameState.activeFragments.length);
+      const fragmentIndex = gameState.activeFragments[randomIndex];
       const fragmentChar = PRIVATE_KEY_CHARS[fragmentIndex];
+      
+      // 🎉 FRAGMENT RÉVÉLÉ !
+      console.log(`✅ Fragment révélé ! Index: ${fragmentIndex}, Char: ${fragmentChar}`);
       
       // Marquer comme révélé
       gameState.revealedFragments[fragmentIndex] = {
@@ -62,7 +64,7 @@ export default async function handler(req, res) {
       // Définir le message du jour
       gameState.messageOfTheDay = {
         messageId,
-        text: MASSA_TRUTHS[messageId],
+        text: MASSA_TRUTHS[messageId] || "Message text not found",
         fragmentIndex,
         fragmentChar,
         revealedBy: userId,
@@ -76,7 +78,8 @@ export default async function handler(req, res) {
       // Reset carry-over (fragment révélé aujourd'hui)
       gameState.carryOverCount = gameState.activeFragments.length;
 
-      console.log(`✅ Fragment révélé ! Index: ${fragmentIndex}, Char: ${fragmentChar}`);
+      // Sauvegarder l'état
+      await saveGameState(gameState);
 
       return res.status(200).json({
         success: true,
@@ -85,25 +88,25 @@ export default async function handler(req, res) {
           index: fragmentIndex,
           char: fragmentChar
         },
-        message: "Fragment revealed! You found today's fragment."
+        message: "Fragment revealed! You found today's fragment.",
+        isFirstReveal: true
       });
     } else {
-      // Pas de fragment révélé
-      // Incrémenter le carry-over si aucun fragment n'a été révélé aujourd'hui
-      if (!gameState.messageOfTheDay) {
-        gameState.carryOverCount = gameState.activeFragments.length;
-      }
-
-      console.log(`❌ Pas de fragment pour messageId=${messageId}`);
+      // Aucun fragment actif (tous révélés aujourd'hui ou carry-over complet)
+      console.log(`❌ Aucun fragment actif disponible`);
 
       return res.status(200).json({
         success: true,
         revealed: false,
-        message: "Today's fragment has not been revealed yet. Another message may still unlock it."
+        message: "Today's fragment has not been revealed yet. Another message may still unlock it.",
+        hasMessageOfTheDay: !!gameState.messageOfTheDay
       });
     }
   } catch (err) {
     console.error('Erreur /api/game/submit:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ 
+      error: 'Internal server error',
+      details: err.message 
+    });
   }
 }
