@@ -114,3 +114,4 @@ export default async function handler(req, res) {
 
 // Export des fonctions utilitaires pour les autres endpoints
 export { getTodayUTC, getGameState, saveGameState, initializeDay, PRIVATE_KEY_CHARS };
+
