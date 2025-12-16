@@ -1,14 +1,6 @@
-// api/game/today.js - Récupère l'état du jeu pour aujourd'hui
+// api/game/today.js - Récupère l'état du jeu pour aujourd'hui (avec Vercel KV)
 
-// Pour stocker l'état, on utilise un objet en mémoire (temporaire)
-// TODO: Remplacer par Vercel KV ou une vraie DB en production
-let gameState = {
-  lastUpdate: null,
-  activeFragments: [], // Liste des indices de fragments actifs aujourd'hui
-  revealedFragments: {}, // { fragmentIndex: { messageId, revealedBy, timestamp } }
-  messageOfTheDay: null, // { messageId, text, fragmentIndex, revealedBy, timestamp }
-  carryOverCount: 0 // Nombre de fragments en attente
-};
+import { kv } from '@vercel/kv';
 
 // Les 53 caractères de la clé privée
 const PRIVATE_KEY_CHARS = "S12bFTmZYFZfFBQc7rMz8Yt92gELGJrgMiNpqnPPAwYRyi2LFNXp".split("");
@@ -19,9 +11,31 @@ function getTodayUTC() {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString().split('T')[0];
 }
 
-// Fonction pour initialiser le jour (appelée au premier accès de la journée)
-function initializeDay() {
+// Fonction pour récupérer l'état depuis KV
+async function getGameState() {
+  const state = await kv.get('gameState');
+  if (!state) {
+    // État initial
+    return {
+      lastUpdate: null,
+      activeFragments: [],
+      revealedFragments: {},
+      messageOfTheDay: null,
+      carryOverCount: 0
+    };
+  }
+  return state;
+}
+
+// Fonction pour sauvegarder l'état dans KV
+async function saveGameState(state) {
+  await kv.set('gameState', state);
+}
+
+// Fonction pour initialiser le jour
+async function initializeDay() {
   const today = getTodayUTC();
+  const gameState = await getGameState();
   
   // Si c'est un nouveau jour
   if (gameState.lastUpdate !== today) {
@@ -52,7 +66,12 @@ function initializeDay() {
     
     gameState.lastUpdate = today;
     gameState.messageOfTheDay = null; // Reset le message du jour
+    
+    // Sauvegarder
+    await saveGameState(gameState);
   }
+  
+  return gameState;
 }
 
 export default async function handler(req, res) {
@@ -71,7 +90,7 @@ export default async function handler(req, res) {
 
   try {
     // Initialiser le jour si nécessaire
-    initializeDay();
+    const gameState = await initializeDay();
 
     // Retourner l'état public (sans révéler quels fragments sont actifs)
     const response = {
@@ -80,15 +99,18 @@ export default async function handler(req, res) {
       revealedCount: Object.keys(gameState.revealedFragments).length,
       messageOfTheDay: gameState.messageOfTheDay,
       hasActiveFragments: gameState.activeFragments.length > 0,
-      // NE PAS exposer activeFragments ou carryOverCount
+      // NE PAS exposer activeFragments ou carryOverCount pour éviter la triche
     };
 
     return res.status(200).json(response);
   } catch (err) {
     console.error('Erreur /api/game/today:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ 
+      error: 'Internal server error',
+      details: err.message 
+    });
   }
 }
 
-// Export de l'état pour les autres endpoints (simulation d'un store partagé)
-export { gameState, getTodayUTC, initializeDay, PRIVATE_KEY_CHARS };
+// Export des fonctions utilitaires pour les autres endpoints
+export { getTodayUTC, getGameState, saveGameState, initializeDay, PRIVATE_KEY_CHARS };
