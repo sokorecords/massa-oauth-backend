@@ -1,7 +1,6 @@
 // index.js - Version Finale Sécurisée
 import express from 'express';
 import cors from 'cors';
-import fetch from 'node-fetch';
 import { kv } from '@vercel/kv';
 // IMPORTANT : On ajoute bien l'extension .js ici
 import { MASSA_TRUTHS } from './truths.js';
@@ -120,3 +119,4 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`🚀 Ready on ${PORT}`));
 
 export default app;
+
