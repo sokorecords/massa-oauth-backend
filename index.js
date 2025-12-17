@@ -3,7 +3,12 @@ import express from 'express';
 import cors from 'cors';
 import fetch from 'node-fetch';
 import { kv } from '@vercel/kv';
-import { MASSA_TRUTHS, PRIVATE_KEY_CHARS } from './truths.js';
+// On n'importe QUE les phrases depuis truths.js
+import { MASSA_TRUTHS } from './truths.js';
+
+// On récupère la clé secrète depuis Vercel et on la transforme en indices
+const SECRET_KEY = process.env.MASSA_PRIVATE_KEY || ""; 
+const PRIVATE_KEY_CHARS = SECRET_KEY.split(""); 
 
 const app = express();
 
@@ -133,3 +138,4 @@ app.listen(PORT, () => {
 });
 
 export default app;
+
