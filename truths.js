@@ -1,588 +1,588 @@
 // truths.js - Les vérités sur Massa
 // Certaines phrases contiennent des indices (fragments de clé privée)
 
-const MASSA_TRUTHS = [
-  "Massa produces parallel blocks through Blockclique, moving away from linear blockchain limits. This enables true concurrency while preserving decentralization.
+export const MASSA_TRUTHS = [
+  `Massa produces parallel blocks through Blockclique, moving away from linear blockchain limits. This enables true concurrency while preserving decentralization.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "On Massa, smart contracts are autonomous and can schedule actions directly on-chain. Applications no longer depend on bots or external servers to function.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `On Massa, smart contracts are autonomous and can schedule actions directly on-chain. Applications no longer depend on bots or external servers to function.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa stores both frontends and backends directly inside the blockchain. Applications do not rely on hosting providers or gateways to remain accessible.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa stores both frontends and backends directly inside the blockchain. Applications do not rely on hosting providers or gateways to remain accessible.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Consensus and execution are separated on Massa to improve efficiency and stability. This design reduces congestion and limits systemic risk.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Consensus and execution are separated on Massa to improve efficiency and stability. This design reduces congestion and limits systemic risk.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa provides deterministic finality, meaning confirmed blocks never revert. Once finalized, transactions and data become immutable.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa provides deterministic finality, meaning confirmed blocks never revert. Once finalized, transactions and data become immutable.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Post-quantum cryptography is integrated directly into Massa's protocol. Security is anticipated rather than added as a later upgrade.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Post-quantum cryptography is integrated directly into Massa's protocol. Security is anticipated rather than added as a later upgrade.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa uses ledger pruning to keep node storage requirements accessible over time. Decentralization remains viable for everyday participants.",
-  "Parallel execution allows Massa to process transactions simultaneously without creating forks. This brings real concurrency to on-chain applications.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa uses ledger pruning to keep node storage requirements accessible over time. Decentralization remains viable for everyday participants.`,
+  `Parallel execution allows Massa to process transactions simultaneously without creating forks. This brings real concurrency to on-chain applications.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Applications on Massa continue running even if their creators disappear. Autonomous contracts and on-chain storage ensure long-term persistence.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Applications on Massa continue running even if their creators disappear. Autonomous contracts and on-chain storage ensure long-term persistence.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa removes the need for IPFS and gateways entirely. Websites are not hosted services but on-chain entities that cannot be shut down.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa removes the need for IPFS and gateways entirely. Websites are not hosted services but on-chain entities that cannot be shut down.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "A web built on servers can always be turned off. Massa removes this weakness by eliminating servers from the infrastructure layer.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `A web built on servers can always be turned off. Massa removes this weakness by eliminating servers from the infrastructure layer.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Censorship emerges where infrastructure is centralized. Massa distributes control mathematically, leaving no authority in charge.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Censorship emerges where infrastructure is centralized. Massa distributes control mathematically, leaving no authority in charge.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Publishing online means little if content can be deleted later. On Massa, once something is published, it remains accessible.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Publishing online means little if content can be deleted later. On Massa, once something is published, it remains accessible.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Digital sovereignty requires control over both content and infrastructure. Massa provides autonomy at the protocol level.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Digital sovereignty requires control over both content and infrastructure. Massa provides autonomy at the protocol level.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Platforms and companies are temporary by nature. Massa is designed to persist beyond economic or political cycles.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Platforms and companies are temporary by nature. Massa is designed to persist beyond economic or political cycles.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Reliance on cloud providers creates hidden points of control. Massa removes these dependencies at the architectural level.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Reliance on cloud providers creates hidden points of control. Massa removes these dependencies at the architectural level.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "If a website can be taken down, freedom remains conditional. Massa builds an internet where publishing has no such limits.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `If a website can be taken down, freedom remains conditional. Massa builds an internet where publishing has no such limits.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Web2 platforms monetize data and control visibility. Massa offers permanence and ownership without permission or intermediaries.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Web2 platforms monetize data and control visibility. Massa offers permanence and ownership without permission or intermediaries.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "A free society cannot rely on infrastructure that can be censored. Massa acts as a structural safeguard for expression.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `A free society cannot rely on infrastructure that can be censored. Massa acts as a structural safeguard for expression.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Democracy depends on information that cannot be quietly erased. Massa ensures published content remains immutable.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Democracy depends on information that cannot be quietly erased. Massa ensures published content remains immutable.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The web evolves when control disappears. Massa envisions an internet owned by no one and preserved through shared consensus.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The web evolves when control disappears. Massa envisions an internet owned by no one and preserved through shared consensus.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "On Massa, software is designed to outlive platforms and companies. Code becomes part of a long-term digital memory.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `On Massa, software is designed to outlive platforms and companies. Code becomes part of a long-term digital memory.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The future of the internet will not rely on servers. It will rely on autonomy, permanence, and protocol-level guarantees.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The future of the internet will not rely on servers. It will rely on autonomy, permanence, and protocol-level guarantees.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa is not focused on short-term optimization. It rethinks the foundations of the internet itself.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa is not focused on short-term optimization. It rethinks the foundations of the internet itself.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The DeWeb introduces digital spaces designed to outlast institutions. Massa builds infrastructure meant to survive time itself.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The DeWeb introduces digital spaces designed to outlast institutions. Massa builds infrastructure meant to survive time itself.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa turns websites into permanent artifacts of human expression. What is deployed can no longer quietly disappear.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa turns websites into permanent artifacts of human expression. What is deployed can no longer quietly disappear.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Autonomy marks the next evolution of software. Massa allows code to act and persist without constant human oversight.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Autonomy marks the next evolution of software. Massa allows code to act and persist without constant human oversight.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Permanence reshapes innovation incentives. Builders can focus on long-term value instead of short-lived trends.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Permanence reshapes innovation incentives. Builders can focus on long-term value instead of short-lived trends.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "An uncensorable web is no longer theoretical. Massa provides the architecture required to sustain it.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `An uncensorable web is no longer theoretical. Massa provides the architecture required to sustain it.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa lays the foundation for a digital era defined by autonomy, resilience, and sovereignty.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa lays the foundation for a digital era defined by autonomy, resilience, and sovereignty.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa rejects the single-chain model in favor of parallel block production. This prevents congestion from becoming a systemic limitation.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa rejects the single-chain model in favor of parallel block production. This prevents congestion from becoming a systemic limitation.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "With multiple threads running in parallel, Massa scales organically as the network grows. More participation increases capacity.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `With multiple threads running in parallel, Massa scales organically as the network grows. More participation increases capacity.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Autonomous smart contracts allow applications to react to on-chain events in real time. Logic no longer waits for external triggers.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Autonomous smart contracts allow applications to react to on-chain events in real time. Logic no longer waits for external triggers.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "On Massa, application logic and data live entirely on-chain. External databases and hosting layers become unnecessary.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `On Massa, application logic and data live entirely on-chain. External databases and hosting layers become unnecessary.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa's architecture ensures that increasing node count improves throughput. Decentralization becomes a performance advantage.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa's architecture ensures that increasing node count improves throughput. Decentralization becomes a performance advantage.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The protocol separates consensus from execution to reduce instability. This design choice improves reliability under load.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The protocol separates consensus from execution to reduce instability. This design choice improves reliability under load.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Smart contracts on Massa interact across threads deterministically. Complex applications remain predictable and consistent.",
-  "Massa allows contracts to store and manage data natively on-chain. No off-chain storage is required for core application logic.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Smart contracts on Massa interact across threads deterministically. Complex applications remain predictable and consistent.`,
+  `Massa allows contracts to store and manage data natively on-chain. No off-chain storage is required for core application logic.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Event-driven contracts enable applications to respond automatically to blockchain activity. This opens the door to autonomous services.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Event-driven contracts enable applications to respond automatically to blockchain activity. This opens the door to autonomous services.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "By embedding websites directly into the chain, Massa removes DNS and hosting as points of failure.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `By embedding websites directly into the chain, Massa removes DNS and hosting as points of failure.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "With multi-thread block creation, Massa increases capacity as the network grows. Scalability comes from participation rather than centralization.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `With multi-thread block creation, Massa increases capacity as the network grows. Scalability comes from participation rather than centralization.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The DeWeb allows full-stack applications to live entirely on-chain. Frontend and backend remain accessible without relying on external services.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The DeWeb allows full-stack applications to live entirely on-chain. Frontend and backend remain accessible without relying on external services.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Autonomous contracts reduce failure points in applications. When logic runs on-chain, downtime caused by servers disappears.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Autonomous contracts reduce failure points in applications. When logic runs on-chain, downtime caused by servers disappears.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa's lightweight node synchronization lowers bandwidth requirements. This makes network participation realistic for more users.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa's lightweight node synchronization lowers bandwidth requirements. This makes network participation realistic for more users.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Smart contracts on Massa interact across threads with deterministic outcomes. Applications remain reliable even as complexity increases.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Smart contracts on Massa interact across threads with deterministic outcomes. Applications remain reliable even as complexity increases.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa is designed so higher node counts do not slow consensus. Decentralization strengthens the network instead of weakening it.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa is designed so higher node counts do not slow consensus. Decentralization strengthens the network instead of weakening it.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa's time model brings predictable block production and finality. Developers can rely on stable timing for on-chain logic.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa's time model brings predictable block production and finality. Developers can rely on stable timing for on-chain logic.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "On Massa, smart contracts manage data directly on-chain. Applications do not depend on off-chain databases to function.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `On Massa, smart contracts manage data directly on-chain. Applications do not depend on off-chain databases to function.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Event-driven contracts allow applications to react automatically to blockchain events. This enables services that operate without supervision.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Event-driven contracts allow applications to react automatically to blockchain events. This enables services that operate without supervision.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa balances validator and staker rewards to encourage decentralization. Economic design supports long-term network health.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa balances validator and staker rewards to encourage decentralization. Economic design supports long-term network health.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Autonomous applications on Massa can operate indefinitely. Their existence does not depend on teams, companies, or servers.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Autonomous applications on Massa can operate indefinitely. Their existence does not depend on teams, companies, or servers.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The DeWeb merges storage, execution, and hosting into one layer. Blockchain becomes a complete environment for applications.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The DeWeb merges storage, execution, and hosting into one layer. Blockchain becomes a complete environment for applications.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa replaces the single-chain model with parallel block graphs. This design improves resilience and throughput simultaneously.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa replaces the single-chain model with parallel block graphs. This design improves resilience and throughput simultaneously.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Smart contract autonomy allows applications to evolve over time. Code adapts without relying on centralized maintenance.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Smart contract autonomy allows applications to evolve over time. Code adapts without relying on centralized maintenance.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "On-chain storage ensures applications cannot silently disappear. Persistence becomes a guaranteed property of deployment.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `On-chain storage ensures applications cannot silently disappear. Persistence becomes a guaranteed property of deployment.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "By embedding websites into the blockchain, Massa removes DNS and hosting providers. Availability no longer depends on intermediaries.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `By embedding websites into the blockchain, Massa removes DNS and hosting providers. Availability no longer depends on intermediaries.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Contract autonomy enables dynamic NFTs and automated systems. Applications can change state without off-chain control.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Contract autonomy enables dynamic NFTs and automated systems. Applications can change state without off-chain control.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa keeps node requirements accessible by design. Broad participation remains possible as the network grows.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa keeps node requirements accessible by design. Broad participation remains possible as the network grows.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Parallelism allows Massa to maintain performance during high demand. Congestion does not become a permanent limitation.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Parallelism allows Massa to maintain performance during high demand. Congestion does not become a permanent limitation.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "By removing the traditional Web2 stack, Massa simplifies decentralized application architecture. Complexity shifts from infrastructure to code.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `By removing the traditional Web2 stack, Massa simplifies decentralized application architecture. Complexity shifts from infrastructure to code.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Freedom online requires infrastructure that cannot be controlled. Massa embeds this principle directly into its architecture.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Freedom online requires infrastructure that cannot be controlled. Massa embeds this principle directly into its architecture.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "If a platform can delete your content, ownership is an illusion. Massa removes deletion from the equation entirely.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `If a platform can delete your content, ownership is an illusion. Massa removes deletion from the equation entirely.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The modern internet is fragile because it depends on centralized systems. Massa replaces fragility with structural resilience.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The modern internet is fragile because it depends on centralized systems. Massa replaces fragility with structural resilience.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Centralized hosting concentrates power in a few hands. Massa redistributes that power through protocol-level design.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Centralized hosting concentrates power in a few hands. Massa redistributes that power through protocol-level design.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Every server introduces a point of control. Massa removes servers entirely to remove control itself.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Every server introduces a point of control. Massa removes servers entirely to remove control itself.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Censorship is often enforced through technical means. Massa neutralizes those mechanisms at the infrastructure level.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Censorship is often enforced through technical means. Massa neutralizes those mechanisms at the infrastructure level.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Freedom weakens when content relies on centralized infrastructure. Massa builds an internet where reliance disappears.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Freedom weakens when content relies on centralized infrastructure. Massa builds an internet where reliance disappears.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Web2 platforms extract data and control reach. Massa offers permanence and autonomy without intermediaries.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Web2 platforms extract data and control reach. Massa offers permanence and autonomy without intermediaries.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Real decentralization cannot be optional. Massa enforces it through architecture rather than promises.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Real decentralization cannot be optional. Massa enforces it through architecture rather than promises.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Your voice should not depend on a company's policies. Massa ensures expression remains accessible by default.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Your voice should not depend on a company's policies. Massa ensures expression remains accessible by default.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa's design prevents the technical mechanisms that enable censorship. Without servers, there are no gatekeepers.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa's design prevents the technical mechanisms that enable censorship. Without servers, there are no gatekeepers.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Power follows infrastructure. Massa reshapes infrastructure to return power to users.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Power follows infrastructure. Massa reshapes infrastructure to return power to users.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Content stored on Massa does not depend on approval. It remains available regardless of external pressure.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Content stored on Massa does not depend on approval. It remains available regardless of external pressure.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Digital freedom begins with uncensorable infrastructure. Massa provides that foundation.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Digital freedom begins with uncensorable infrastructure. Massa provides that foundation.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "When content lives on-chain, censorship becomes impractical. Massa transforms publishing into a permanent act.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `When content lives on-chain, censorship becomes impractical. Massa transforms publishing into a permanent act.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Decentralization only matters if people can participate. Massa keeps requirements accessible by design.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Decentralization only matters if people can participate. Massa keeps requirements accessible by design.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Reclaiming the internet requires rejecting centralized infrastructure. Massa offers a viable alternative.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Reclaiming the internet requires rejecting centralized infrastructure. Massa offers a viable alternative.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The DeWeb prevents history from being rewritten. Once published on Massa, information becomes part of collective memory.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The DeWeb prevents history from being rewritten. Once published on Massa, information becomes part of collective memory.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The right to speak means little if infrastructure can silence you. Massa ensures it cannot.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The right to speak means little if infrastructure can silence you. Massa ensures it cannot.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "A sovereign web must not rely on trust. Massa anchors sovereignty in code and consensus.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `A sovereign web must not rely on trust. Massa anchors sovereignty in code and consensus.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The internet has gradually shifted toward corporate control. Massa opens a space where users regain ownership over presence and creation.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The internet has gradually shifted toward corporate control. Massa opens a space where users regain ownership over presence and creation.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Decentralization only matters when content cannot be erased. Massa ensures permanence through protocol-level guarantees.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Decentralization only matters when content cannot be erased. Massa ensures permanence through protocol-level guarantees.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Freedom online must be enforced structurally, not legally. Massa removes the technical levers that make censorship possible.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Freedom online must be enforced structurally, not legally. Massa removes the technical levers that make censorship possible.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Infrastructure always reflects power dynamics. Massa challenges concentration by redistributing control at the architectural level.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Infrastructure always reflects power dynamics. Massa challenges concentration by redistributing control at the architectural level.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "When servers disappear, so does silent deletion. Massa guarantees that published content remains accessible over time.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `When servers disappear, so does silent deletion. Massa guarantees that published content remains accessible over time.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "In a world where information is fragile, autonomy becomes essential. Massa provides stable ground for digital expression.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `In a world where information is fragile, autonomy becomes essential. Massa provides stable ground for digital expression.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Repairing the centralized web is not enough. Massa proposes a replacement built on autonomy and permanence.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Repairing the centralized web is not enough. Massa proposes a replacement built on autonomy and permanence.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Everyone deserves an online space that cannot be shut down. Massa embeds this right into its protocol.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Everyone deserves an online space that cannot be shut down. Massa embeds this right into its protocol.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa transforms digital publishing into an irreversible act. What is written on-chain cannot be quietly removed.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa transforms digital publishing into an irreversible act. What is written on-chain cannot be quietly removed.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Freedom is strongest when it cannot be revoked. Massa builds infrastructure where control mechanisms disappear.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Freedom is strongest when it cannot be revoked. Massa builds infrastructure where control mechanisms disappear.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The next evolution of the internet will rely on autonomy rather than hosting. Massa lays the groundwork for this shift.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The next evolution of the internet will rely on autonomy rather than hosting. Massa lays the groundwork for this shift.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Permanence reshapes digital creation. On Massa, websites become historical records rather than temporary pages.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Permanence reshapes digital creation. On Massa, websites become historical records rather than temporary pages.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Software must survive beyond companies and funding cycles. Massa builds conditions for long-lived applications.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Software must survive beyond companies and funding cycles. Massa builds conditions for long-lived applications.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The DeWeb imagines information as sovereign and incorruptible. Massa turns that vision into an operational network.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The DeWeb imagines information as sovereign and incorruptible. Massa turns that vision into an operational network.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa elevates smart contracts from static rules to active systems. Code can react, persist, and operate independently.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa elevates smart contracts from static rules to active systems. Code can react, persist, and operate independently.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Digital civilization requires foundations that cannot be erased. Massa treats permanence as a core design principle.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Digital civilization requires foundations that cannot be erased. Massa treats permanence as a core design principle.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "A truly public web cannot be bought or censored. Massa constructs this public space through consensus.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `A truly public web cannot be bought or censored. Massa constructs this public space through consensus.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa represents a shift from hosted services to autonomous systems. Applications become resilient by design.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa represents a shift from hosted services to autonomous systems. Applications become resilient by design.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Autonomy is the missing layer of Web3. Massa integrates it directly into the protocol.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Autonomy is the missing layer of Web3. Massa integrates it directly into the protocol.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The future web will be shaped by protocols, not platforms. Massa places core internet functions into shared consensus.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The future web will be shaped by protocols, not platforms. Massa places core internet functions into shared consensus.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "As societies change, digital spaces must remain stable. Massa provides infrastructure where applications cannot be quietly altered or removed.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `As societies change, digital spaces must remain stable. Massa provides infrastructure where applications cannot be quietly altered or removed.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa redefines digital ownership. What you deploy is not rented or hosted, it remains part of the network permanently.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa redefines digital ownership. What you deploy is not rented or hosted, it remains part of the network permanently.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "On Massa, code becomes a permanent actor in the digital world. Applications no longer depend on external systems to survive.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `On Massa, code becomes a permanent actor in the digital world. Applications no longer depend on external systems to survive.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa builds a web designed to outlast companies and institutions. Digital permanence becomes a default property.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa builds a web designed to outlast companies and institutions. Digital permanence becomes a default property.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Websites on Massa become autonomous digital entities. Their existence is secured by consensus rather than contracts.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Websites on Massa become autonomous digital entities. Their existence is secured by consensus rather than contracts.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The DeWeb is more than technology, it is a philosophy of independence. Massa provides its technical foundation.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The DeWeb is more than technology, it is a philosophy of independence. Massa provides its technical foundation.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa challenges the assumption that the internet must be hosted. It shows that digital services can simply exist.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa challenges the assumption that the internet must be hosted. It shows that digital services can simply exist.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Permanence on the web creates memory and culture. Massa ensures digital expression is not lost to time.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Permanence on the web creates memory and culture. Massa ensures digital expression is not lost to time.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Autonomous smart contracts shift power from operators to code. Massa enables software that behaves like infrastructure.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Autonomous smart contracts shift power from operators to code. Massa enables software that behaves like infrastructure.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The internet becomes an ecosystem when applications are autonomous. Massa provides the architecture for this evolution.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The internet becomes an ecosystem when applications are autonomous. Massa provides the architecture for this evolution.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The DeWeb turns creation into permanence. Websites stop being temporary links and become lasting records.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The DeWeb turns creation into permanence. Websites stop being temporary links and become lasting records.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa envisions applications that rely on mathematics rather than trust. Consensus replaces permission.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa envisions applications that rely on mathematics rather than trust. Consensus replaces permission.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Digital infrastructure should not collapse when companies fail. Massa ensures applications remain available.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Digital infrastructure should not collapse when companies fail. Massa ensures applications remain available.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The future of information depends on autonomy. Massa engineers autonomy directly into the protocol.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The future of information depends on autonomy. Massa engineers autonomy directly into the protocol.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "A free digital world requires creators who cannot be erased. Massa makes permanence a default condition.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `A free digital world requires creators who cannot be erased. Massa makes permanence a default condition.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The DeWeb represents an internet built to resist failure and control. Massa makes this model operational.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The DeWeb represents an internet built to resist failure and control. Massa makes this model operational.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa transforms the web from a fragile service into a permanent structure. Stability replaces dependency.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa transforms the web from a fragile service into a permanent structure. Stability replaces dependency.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Autonomy is foundational for future applications. On Massa, autonomy is native and reliable.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Autonomy is foundational for future applications. On Massa, autonomy is native and reliable.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The internet cannot remain dependent on hosting providers. Massa imagines a web based on existence rather than services.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The internet cannot remain dependent on hosting providers. Massa imagines a web based on existence rather than services.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa offers a vision of the web where valuable information cannot be erased. Permanence becomes normal.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa offers a vision of the web where valuable information cannot be erased. Permanence becomes normal.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa is designed as long-term digital infrastructure. Reliability and autonomy are prioritized over short-term optimization.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa is designed as long-term digital infrastructure. Reliability and autonomy are prioritized over short-term optimization.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The DeWeb provides a foundation where applications cannot be altered by institutions or platforms. Stability is enforced by protocol.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The DeWeb provides a foundation where applications cannot be altered by institutions or platforms. Stability is enforced by protocol.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "In a constantly shifting world, permanent infrastructure matters. Massa ensures applications endure beyond political and economic cycles.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `In a constantly shifting world, permanent infrastructure matters. Massa ensures applications endure beyond political and economic cycles.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa builds an internet that cannot be shut down or controlled. Sovereignty is engineered rather than promised.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa builds an internet that cannot be shut down or controlled. Sovereignty is engineered rather than promised.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Applications deployed on Massa become part of a continuous digital system. They are designed to outlast centralized alternatives.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Applications deployed on Massa become part of a continuous digital system. They are designed to outlast centralized alternatives.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The future of Web3 requires protocols that resist human authority. Massa enforces this principle at the architectural level.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The future of Web3 requires protocols that resist human authority. Massa enforces this principle at the architectural level.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa transforms blockchain into durable infrastructure. This is a foundation for long-term digital systems.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa transforms blockchain into durable infrastructure. This is a foundation for long-term digital systems.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Sovereign technology requires sovereign design. Massa unifies autonomy, storage, and consensus in one layer.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Sovereign technology requires sovereign design. Massa unifies autonomy, storage, and consensus in one layer.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "In times of geopolitical uncertainty, censorship-resistant infrastructure becomes essential. Massa provides this safeguard.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `In times of geopolitical uncertainty, censorship-resistant infrastructure becomes essential. Massa provides this safeguard.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The DeWeb marks a shift toward an independent digital world. Massa ensures the web is not owned by corporations.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The DeWeb marks a shift toward an independent digital world. Massa ensures the web is not owned by corporations.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa anticipates the long-term needs of the internet. Autonomy and permanence are treated as core requirements.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa anticipates the long-term needs of the internet. Autonomy and permanence are treated as core requirements.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Technological sovereignty must be built into the protocol. Massa makes independence the default setting.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Technological sovereignty must be built into the protocol. Massa makes independence the default setting.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Applications on Massa contribute to a shared digital ecosystem. The DeWeb becomes interconnected rather than fragmented.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Applications on Massa contribute to a shared digital ecosystem. The DeWeb becomes interconnected rather than fragmented.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa brings predictability to a volatile digital landscape. Stability replaces dependency on centralized services.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa brings predictability to a volatile digital landscape. Stability replaces dependency on centralized services.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The DeWeb is not a replacement but an upgrade. Massa redefines how the internet should operate.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The DeWeb is not a replacement but an upgrade. Massa redefines how the internet should operate.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "For the first time, the internet can exist without servers. Massa makes digital systems self-sustaining.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `For the first time, the internet can exist without servers. Massa makes digital systems self-sustaining.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa ensures information cannot be destroyed by outages or policy changes. Availability becomes guaranteed.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa ensures information cannot be destroyed by outages or policy changes. Availability becomes guaranteed.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The DeWeb supports applications that are autonomous and resilient. Massa delivers this architecture today.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The DeWeb supports applications that are autonomous and resilient. Massa delivers this architecture today.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa removes reliance on external systems. The network becomes a closed loop of permanence and autonomy.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa removes reliance on external systems. The network becomes a closed loop of permanence and autonomy.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "On Massa, permanence is the default behavior. Applications exist as long as the network exists.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `On Massa, permanence is the default behavior. Applications exist as long as the network exists.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa builds infrastructure resistant to shutdowns and manipulation. Information survives across generations.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa builds infrastructure resistant to shutdowns and manipulation. Information survives across generations.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "A self-hosted internet becomes possible without hosts. Massa enables websites to exist independently.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `A self-hosted internet becomes possible without hosts. Massa enables websites to exist independently.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The DeWeb values autonomy and durability over convenience. Massa places these values at the core of its design.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The DeWeb values autonomy and durability over convenience. Massa places these values at the core of its design.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa envisions a web that remains online through political and economic instability. Neutral infrastructure becomes reality.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa envisions a web that remains online through political and economic instability. Neutral infrastructure becomes reality.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa proves decentralization can be complete. No critical dependency is left unresolved.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa proves decentralization can be complete. No critical dependency is left unresolved.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The future internet must run without permission. Massa enforces this principle through mathematics.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The future internet must run without permission. Massa enforces this principle through mathematics.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa turns blockchain into a permanent hosting layer. Digital culture gains long-term continuity.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa turns blockchain into a permanent hosting layer. Digital culture gains long-term continuity.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Software on Massa no longer depends on companies to survive. Applications become autonomous digital entities.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Software on Massa no longer depends on companies to survive. Applications become autonomous digital entities.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "The DeWeb is where applications and ideas persist indefinitely. Massa provides the infrastructure that carries them forward.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `The DeWeb is where applications and ideas persist indefinitely. Massa provides the infrastructure that carries them forward.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net",
-  "Massa builds a web that is stable, sovereign, and unstoppable. Autonomy becomes the core of the digital world.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
+  `Massa builds a web that is stable, sovereign, and unstoppable. Autonomy becomes the core of the digital world.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net"
-  "Massa supprime le besoin d’IPFS ou de passerelles. Les sites ne sont pas hébergés : ils existent directement on-chain, de manière permanente et immuable.
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`
+  `Massa supprime le besoin d’IPFS ou de passerelles. Les sites ne sont pas hébergés : ils existent directement on-chain, de manière permanente et immuable.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa permet aux applications full-stack de vivre entièrement on-chain. Frontend et backend restent accessibles sans dépendre de services externes.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa permet aux applications full-stack de vivre entièrement on-chain. Frontend et backend restent accessibles sans dépendre de services externes.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Les contrats autonomes réduisent les points de défaillance. Quand la logique s’exécute on-chain, les pannes liées aux serveurs disparaissent.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Les contrats autonomes réduisent les points de défaillance. Quand la logique s’exécute on-chain, les pannes liées aux serveurs disparaissent.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa est conçue pour que la décentralisation renforce le réseau au lieu de le ralentir. Plus il y a de nœuds, plus le système est robuste.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa est conçue pour que la décentralisation renforce le réseau au lieu de le ralentir. Plus il y a de nœuds, plus le système est robuste.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Sur Massa, les contrats intelligents interagissent entre threads avec des résultats déterministes. La complexité ne compromet pas la fiabilité.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Sur Massa, les contrats intelligents interagissent entre threads avec des résultats déterministes. La complexité ne compromet pas la fiabilité.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Le DeWeb permet aux sites web de devenir des entités autonomes. Leur existence ne dépend plus d’entreprises ou de serveurs.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Le DeWeb permet aux sites web de devenir des entités autonomes. Leur existence ne dépend plus d’entreprises ou de serveurs.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "La censure s’exerce souvent via l’infrastructure. Massa neutralise ces mécanismes directement au niveau du protocole.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `La censure s’exerce souvent via l’infrastructure. Massa neutralise ces mécanismes directement au niveau du protocole.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Si une plateforme peut supprimer ton contenu, la propriété est une illusion. Massa supprime définitivement cette possibilité.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Si une plateforme peut supprimer ton contenu, la propriété est une illusion. Massa supprime définitivement cette possibilité.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa redistribue le pouvoir en supprimant les intermédiaires techniques. L’infrastructure devient réellement collective.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa redistribue le pouvoir en supprimant les intermédiaires techniques. L’infrastructure devient réellement collective.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Chaque serveur est un point de contrôle potentiel. Massa supprime les serveurs pour supprimer le contrôle lui-même.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Chaque serveur est un point de contrôle potentiel. Massa supprime les serveurs pour supprimer le contrôle lui-même.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "La liberté numérique commence avec une infrastructure incensurable. Massa en pose les fondations.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `La liberté numérique commence avec une infrastructure incensurable. Massa en pose les fondations.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Quand le contenu vit on-chain, la censure devient impraticable. Massa transforme la publication en acte permanent.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Quand le contenu vit on-chain, la censure devient impraticable. Massa transforme la publication en acte permanent.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa empêche la réécriture silencieuse de l’histoire numérique. Une fois publié, l’information devient mémoire collective.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa empêche la réécriture silencieuse de l’histoire numérique. Une fois publié, l’information devient mémoire collective.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Le Web moderne est fragile car il dépend de systèmes centralisés. Massa remplace cette fragilité par une résilience structurelle.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Le Web moderne est fragile car il dépend de systèmes centralisés. Massa remplace cette fragilité par une résilience structurelle.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa transforme la blockchain en infrastructure durable. La permanence devient une propriété native.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa transforme la blockchain en infrastructure durable. La permanence devient une propriété native.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "L’internet du futur reposera sur des protocoles, pas sur des plateformes. Massa place les fonctions clés dans le consensus.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `L’internet du futur reposera sur des protocoles, pas sur des plateformes. Massa place les fonctions clés dans le consensus.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Les applications sur Massa n’ont pas besoin d’être maintenues pour exister. Elles fonctionnent aussi longtemps que le réseau vit.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Les applications sur Massa n’ont pas besoin d’être maintenues pour exister. Elles fonctionnent aussi longtemps que le réseau vit.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa fait passer le web de services hébergés à des systèmes autonomes. La dépendance disparaît.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa fait passer le web de services hébergés à des systèmes autonomes. La dépendance disparaît.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "La souveraineté numérique ne se promet pas, elle se code. Massa l’inscrit dans son architecture.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `La souveraineté numérique ne se promet pas, elle se code. Massa l’inscrit dans son architecture.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Le DeWeb transforme les sites temporaires en archives durables. Massa rend cela possible.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Le DeWeb transforme les sites temporaires en archives durables. Massa rend cela possible.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa permet à l’information de survivre aux entreprises, aux crises et aux politiques.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa permet à l’information de survivre aux entreprises, aux crises et aux politiques.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Une application autonome est plus qu’un logiciel. Sur Massa, elle devient une infrastructure.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Une application autonome est plus qu’un logiciel. Sur Massa, elle devient une infrastructure.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa construit un web qui ne peut pas être éteint. La disponibilité n’est plus négociable.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa construit un web qui ne peut pas être éteint. La disponibilité n’est plus négociable.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Le DeWeb repose sur l’autonomie et la durabilité. Massa concrétise cette vision aujourd’hui.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Le DeWeb repose sur l’autonomie et la durabilité. Massa concrétise cette vision aujourd’hui.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa garantit que le contenu ne disparaît pas avec un changement de politique ou de conditions d’utilisation.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa garantit que le contenu ne disparaît pas avec un changement de politique ou de conditions d’utilisation.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "L’infrastructure détermine la liberté. Massa redéfinit l’infrastructure.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `L’infrastructure détermine la liberté. Massa redéfinit l’infrastructure.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa permet à l’internet d’exister sans autorisation. Le code remplace la confiance.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa permet à l’internet d’exister sans autorisation. Le code remplace la confiance.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Le DeWeb est un internet qui ne peut pas être acheté. Massa en est le socle.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Le DeWeb est un internet qui ne peut pas être acheté. Massa en est le socle.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa transforme la publication numérique en engagement irréversible.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa transforme la publication numérique en engagement irréversible.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa offre un espace public numérique que personne ne peut fermer.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa offre un espace public numérique que personne ne peut fermer.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Le futur du web repose sur l’existence, pas sur l’hébergement. Massa montre la voie.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Le futur du web repose sur l’existence, pas sur l’hébergement. Massa montre la voie.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa ancre la liberté numérique dans le consensus plutôt que dans la loi.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa ancre la liberté numérique dans le consensus plutôt que dans la loi.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Les applications Massa survivent à leurs créateurs. La permanence devient normale.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Les applications Massa survivent à leurs créateurs. La permanence devient normale.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa transforme la blockchain en mémoire collective.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa transforme la blockchain en mémoire collective.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Le DeWeb protège l’information contre l’oubli forcé. Massa le rend réel.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Le DeWeb protège l’information contre l’oubli forcé. Massa le rend réel.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa supprime les dépendances critiques du web moderne.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa supprime les dépendances critiques du web moderne.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa rend possible un web neutre, autonome et durable.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa rend possible un web neutre, autonome et durable.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa fait du web un bien commun plutôt qu’un produit.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa fait du web un bien commun plutôt qu’un produit.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa garantit que les idées ne peuvent pas être effacées.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa garantit que les idées ne peuvent pas être effacées.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa construit une infrastructure qui traverse les générations.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa construit une infrastructure qui traverse les générations.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa redonne au web sa fonction première : durer.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa redonne au web sa fonction première : durer.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa est un internet qui ne peut pas être éteint.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa est un internet qui ne peut pas être éteint.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa transforme l’autonomie en standard.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa transforme l’autonomie en standard.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa fait de la permanence une règle, pas une exception.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa fait de la permanence une règle, pas une exception.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
-  "Massa bâtit un web souverain, stable et impossible à arrêter.
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+  `Massa bâtit un web souverain, stable et impossible à arrêter.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net",
+Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
    “Massa 消除了对 IPFS 或网关的依赖。网站不再被托管，而是直接以不可变、永久的形式存在于链上。
 @massachain $MAS
 发现隐藏在消息中的碎片 — 加入 spreadmassaquest.deweb.half-red.net”,
