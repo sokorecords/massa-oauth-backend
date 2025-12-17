@@ -446,7 +446,7 @@ Some messages carry fragments. Play the game and uncover hidden rewards at sprea
 Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
   `Massa builds a web that is stable, sovereign, and unstoppable. Autonomy becomes the core of the digital world.
 @massachain $MAS
-Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
   `Massa supprime le besoin d’IPFS ou de passerelles. Les sites ne sont pas hébergés : ils existent directement on-chain, de manière permanente et immuable.
 @massachain $MAS
 Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
@@ -1123,4 +1123,5 @@ Descubre fragmentos ocultos en los mensajes — ¡únete al juego Spread Massa Q
 @massachain $MAS
 Descubre fragmentos ocultos en los mensajes — ¡únete al juego Spread Massa Quest y gana premios! Visita spreadmassaquest.deweb.half-red.net`,
 ];
+
 
