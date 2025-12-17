@@ -27,7 +27,7 @@ Some messages carry fragments. Play the game and uncover hidden rewards at sprea
   `Massa removes the need for IPFS and gateways entirely. Websites are not hosted services but on-chain entities that cannot be shut down.
 @massachain $MAS
 Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
-  `A web built on servers can always be turned off. Massa removes this weakness by eliminating servers from the infrastructure layer.
+  `A web built on servers can always be turned off. Massa removes this weakness by eliminating servers from the infrastructure layer .
 @massachain $MAS
 Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
   `Censorship emerges where infrastructure is centralized. Massa distributes control mathematically, leaving no authority in charge.
@@ -1125,4 +1125,5 @@ Descubre fragmentos ocultos en los mensajes — ¡únete al juego Spread Massa Q
 
 export { MASSA_TRUTHS, PRIVATE_KEY_CHARS };
 }
+
 
