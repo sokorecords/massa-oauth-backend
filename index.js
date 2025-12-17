@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import fetch from 'node-fetch';
 import { kv } from '@vercel/kv'; // Ajout de la connexion Redis
+import { MASSA_TRUTHS, PRIVATE_KEY_CHARS } from './truths.js';
 
 const app = express();
 
@@ -123,3 +124,4 @@ app.listen(PORT, () => {
 });
 
 export default app;
+
