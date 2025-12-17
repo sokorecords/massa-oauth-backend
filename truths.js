@@ -1,6 +1,3 @@
-// truths.js - Les vérités sur Massa
-// Certaines phrases contiennent des indices (fragments de clé privée)
-
 export const MASSA_TRUTHS = [
   `Massa produces parallel blocks through Blockclique, moving away from linear blockchain limits. This enables true concurrency while preserving decentralization.
 @massachain $MAS
@@ -1128,3 +1125,4 @@ Descubre fragmentos ocultos en los mensajes — ¡únete al juego Spread Massa Q
 
 export { MASSA_TRUTHS, PRIVATE_KEY_CHARS };
 }
+
