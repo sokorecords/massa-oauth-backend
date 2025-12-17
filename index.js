@@ -1,13 +1,13 @@
-// index.js - Backend proxy avec Auth X et Support Redis (KV)
+// index.js - Backend complet avec progression réelle
 import express from 'express';
 import cors from 'cors';
 import fetch from 'node-fetch';
-import { kv } from '@vercel/kv'; // Ajout de la connexion Redis
+import { kv } from '@vercel/kv';
 import { MASSA_TRUTHS, PRIVATE_KEY_CHARS } from './truths.js';
 
 const app = express();
 
-// --- CONFIGURATION CORS (Ta version optimisée) ---
+// --- CONFIGURATION CORS ---
 const allowedOrigin = 'https://spreadmassaquest.build.half-red.net';
 
 app.use(cors({
@@ -17,23 +17,15 @@ app.use(cors({
   credentials: true
 }));
 
-app.options('*', (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.sendStatus(200);
-});
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const CLIENT_ID = "SHFXVndGU2ZBRk1GbzlpWlFJR1Q6MTpjaQ";
 
-// --- ROUTES AUTHENTIFICATION (Tes routes d'origine) ---
+// --- ROUTES AUTHENTIFICATION ---
 
 app.get('/', (req, res) => {
-  res.json({ status: 'ok', message: 'Massa OAuth Backend with Redis is running!' });
+  res.json({ status: 'ok', message: 'Massa Quest Backend Active' });
 });
 
 app.post('/api/oauth/token', async (req, res) => {
@@ -73,9 +65,9 @@ app.post('/api/user/profile', async (req, res) => {
   }
 });
 
-// --- NOUVELLES ROUTES DU JEU (Lien avec Upstash/Redis) ---
+// --- ROUTES DU JEU (LOGIQUE DE PROGRESSION) ---
 
-// 1. Générer le post quotidien et vérifier s'il a déjà joué
+// 1. Générer le post quotidien à partir de truths.js
 app.post('/api/game/generate', async (req, res) => {
   const { username } = req.body;
   if (!username) return res.status(400).json({ error: "Username requis" });
@@ -87,33 +79,50 @@ app.post('/api/game/generate', async (req, res) => {
     const alreadyPlayed = await kv.get(key);
     if (alreadyPlayed) return res.json({ text: null });
 
-    // Texte avec un code unique pour éviter le spam
-    const text = `I'm hunting for @MassaLabs secrets on #MassaQuest! 🧪 Progress: [${Math.random().toString(36).substring(7).toUpperCase()}] 
-Join the quest here: https://spreadmassaquest.build.half-red.net/`;
+    // Sélection aléatoire d'une vérité
+    const randomIndex = Math.floor(Math.random() * MASSA_TRUTHS.length);
+    const text = MASSA_TRUTHS[randomIndex];
 
-    // Marquer comme joué pendant 24h
+    // On ne marque "joué" que si la génération a réussi
     await kv.set(key, "true", { ex: 86400 });
     res.json({ text });
   } catch (err) {
+    console.error("Erreur Generate:", err);
     res.status(500).json({ error: "Redis Error", details: err.message });
   }
 });
 
-// 2. Valider le tweet et débloquer un fragment
+// 2. Valider le tweet et donner le fragment SUIVANT (de 1 à 53)
 app.post('/api/game/submit', async (req, res) => {
   const { username, tweetUrl } = req.body;
   if (!username || !tweetUrl) return res.status(400).json({ error: "Données manquantes" });
 
   try {
-    // Liste des lettres à débloquer pour Massa
-    const letters = ["M", "A", "S", "S", "A"];
-    const fragment = letters[Math.floor(Math.random() * letters.length)];
+    const countKey = `user:count:${username}`;
+    let currentCount = await kv.get(countKey) || 0;
+
+    // Si l'utilisateur a déjà tout trouvé
+    if (currentCount >= 53) {
+      return res.json({ status: "ERROR", message: "Tu as déjà découvert toute la clé !" });
+    }
+
+    // Récupérer le caractère à la position actuelle
+    const fragment = PRIVATE_KEY_CHARS[currentCount];
+    const position = currentCount + 1;
+
+    // Incrémenter la progression dans Redis
+    await kv.set(countKey, currentCount + 1);
     
-    // On enregistre le fragment dans le "set" Redis de l'utilisateur
-    await kv.sadd(`user:fragments:${username}`, fragment);
-    
-    res.json({ status: "SUCCESS", fragment: fragment });
+    // Sauvegarder aussi le fragment dans la liste de l'utilisateur (historique)
+    await kv.sadd(`user:fragments:${username}`, `${position}:${fragment}`);
+
+    res.json({ 
+      status: "SUCCESS", 
+      fragment: fragment, 
+      position: position 
+    });
   } catch (err) {
+    console.error("Erreur Submit:", err);
     res.status(500).json({ error: "Redis Error", details: err.message });
   }
 });
@@ -124,4 +133,3 @@ app.listen(PORT, () => {
 });
 
 export default app;
-
