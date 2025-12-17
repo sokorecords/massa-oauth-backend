@@ -9,6 +9,3 @@ Some messages carry fragments. Play the game and uncover hidden rewards at sprea
 @massachain $MAS
 Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
 ];
-
-export { MASSA_TRUTHS, PRIVATE_KEY_CHARS };
-}
