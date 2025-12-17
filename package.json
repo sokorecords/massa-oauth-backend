@@ -1,6 +1,7 @@
 {
   "name": "massa-oauth-backend",
   "version": "1.0.0",
+  "type": "module",
   "description": "Backend proxy pour OAuth X - Spread Massa Quest",
   "main": "index.js",
   "scripts": {
@@ -17,3 +18,4 @@
     "node": ">=18.x"
   }
 }
+
