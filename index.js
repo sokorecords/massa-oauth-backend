@@ -44,7 +44,6 @@ async function getGameState() {
   let state = await kv.get('gameState');
 
   if (!state || state.lastUpdate !== today) {
-    // Calcul des fragments déjà révélés globalement pour ne pas piocher le même
     const globalRevealed = await kv.smembers('global:revealed_indices') || [];
     const remainingIndices = PRIVATE_KEY_CHARS.map((_, i) => i)
                                .filter(i => !globalRevealed.includes(i.toString()));
@@ -71,7 +70,7 @@ app.post('/api/oauth/token', async (req, res) => {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
         grant_type: "authorization_code",
-        client_id: "SHFXVndGU2ZBRk1GbzlpWlFJR1Q6MTpjaQ", // Ton ID
+        client_id: "SHFXVndGU2ZBRk1GbzlpWlFJR1Q6MTpjaQ",
         code,
         redirect_uri,
         code_verifier
@@ -79,17 +78,32 @@ app.post('/api/oauth/token', async (req, res) => {
     });
     const data = await response.json();
     res.status(response.status).json(data);
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) { 
+    console.error("Token error:", err);
+    res.status(500).json({ error: err.message }); 
+  }
 });
 
+// FIX: Cette route doit recevoir le token dans le body, pas dans les headers
 app.post('/api/user/profile', async (req, res) => {
   try {
+    const { access_token } = req.body;
+    if (!access_token) {
+      return res.status(400).json({ error: "Missing access_token" });
+    }
+    
     const response = await fetch("https://api.x.com/2/users/me?user.fields=profile_image_url", {
-      headers: { "Authorization": req.headers.authorization }
+      headers: { 
+        "Authorization": `Bearer ${access_token}`
+      }
     });
     const data = await response.json();
+    console.log("X API Response:", data); // Pour debug
     res.json(data);
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) { 
+    console.error("Profile error:", err);
+    res.status(500).json({ error: err.message }); 
+  }
 });
 
 // --- LOGIQUE DU JEU ---
@@ -134,7 +148,6 @@ app.post('/api/game/submit', async (req, res) => {
     await kv.sadd('global:revealed_indices', state.activeFragmentIndex);
     await kv.sadd(`user:collection:${username}`, `${state.activeFragmentIndex}:${char}`);
 
-    // Alerte Telegram
     sendTelegramAlert(`🚨 <b>Fragment Revealed!</b>\n\nUser @${username} found a new clue.\n<a href="${tweetUrl}">See the proof on X</a>`);
 
     return res.json({ status: "WINNER", char, index: state.activeFragmentIndex });
@@ -157,7 +170,7 @@ app.post('/api/game/unlock', async (req, res) => {
 // 4. Charger la collection perso
 app.get('/api/user/collection/:username', async (req, res) => {
   const data = await kv.smembers(`user:collection:${req.params.username}`);
-  res.json({ collection: data });
+  res.json({ collection: data || [] });
 });
 
 export default app;
