@@ -201,6 +201,15 @@ app.post('/api/game/submit', async (req, res) => {
     return res.status(400).json({ error: "Invalid tweet URL" });
   }
 
+  // Extraire le username de l'URL (x.com/USERNAME/status/...)
+  const urlMatch = tweetUrl.match(/(?:twitter\.com|x\.com)\/([^\/]+)\/status\/(\d+)/);
+  if (!urlMatch) {
+    return res.status(400).json({ error: "Invalid tweet URL format" });
+  }
+  
+  const urlUsername = urlMatch[1].toLowerCase();
+  const tweetId = urlMatch[2];
+
   const userStatus = await getUserStatus(username);
   const gameState = await getGameState();
 
@@ -214,8 +223,15 @@ app.post('/api/game/submit', async (req, res) => {
 
   // CAS 1: Repost après qu'un pionnier ait trouvé
   if (isRepost && gameState.pioneer) {
-    // Vérifier que c'est un URL différent (simple check)
+    // Vérifier que c'est un URL différent du premier post
     if (userStatus?.firstTweetUrl && tweetUrl !== userStatus.firstTweetUrl) {
+      // Vérifier que le username correspond
+      if (urlUsername !== username.toLowerCase()) {
+        return res.status(400).json({ 
+          error: `This post belongs to @${urlUsername}, not @${username}. Please submit YOUR repost link.`
+        });
+      }
+      
       // Débloquer l'indice
       const clue = `${gameState.pioneer.index}:${gameState.pioneer.char}`;
       await kv.sadd(`user:collection:${username}`, clue);
@@ -241,11 +257,19 @@ app.post('/api/game/submit', async (req, res) => {
 
   // CAS 2: Première soumission
   if (!userStatus?.submitted) {
+    // Vérifier que le username correspond
+    if (urlUsername !== username.toLowerCase()) {
+      return res.status(400).json({ 
+        error: `This post belongs to @${urlUsername}. Please submit YOUR post link from your @${username} account.`
+      });
+    }
+    
     // Marquer comme soumis
     await setUserStatus(username, {
       ...userStatus,
       submitted: true,
-      firstTweetUrl: tweetUrl
+      firstTweetUrl: tweetUrl,
+      firstTweetId: tweetId
     });
 
     // Si pionnier déjà trouvé
@@ -282,7 +306,7 @@ app.post('/api/game/submit', async (req, res) => {
 
       // Alert Telegram
       sendTelegramAlert(
-        `<b>FRAGMENT REVEALED!</b>\n\n` +
+        `<b>🚨 FRAGMENT REVEALED! 🚨</b>\n\n` +
         `User @${username} discovered today's clue.\n` +
         `Character: <code>${char}</code> at position ${gameState.activeFragmentIndex}\n\n` +
         `<a href="${tweetUrl}">View the post on X</a>`
@@ -308,7 +332,7 @@ app.post('/api/game/submit', async (req, res) => {
     });
   }
 
-  res.status(400).json({ error: "Invalid request" });
+  res.status(400).json({ error: "You have already submitted your post for today." });
 });
 
 // 3. Get user collection
