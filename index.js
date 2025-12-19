@@ -37,6 +37,42 @@ async function sendTelegramAlert(message) {
 
 // Helper: UTC Date
 const getTodayUTC = () => new Date().toISOString().split('T')[0];
+const getYesterdayUTC = () => {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return yesterday.toISOString().split('T')[0];
+};
+
+// --- GESTION DU STREAK ---
+async function updateUserStreak(username) {
+  const today = getTodayUTC();
+  const yesterday = getYesterdayUTC();
+  
+  const streakKey = `streak:${username}`;
+  const streakData = await kv.get(streakKey);
+  
+  if (!streakData) {
+    // Première visite
+    await kv.set(streakKey, { lastVisit: today, streak: 1 });
+    return 1;
+  }
+  
+  if (streakData.lastVisit === today) {
+    // Déjà visité aujourd'hui
+    return streakData.streak;
+  }
+  
+  if (streakData.lastVisit === yesterday) {
+    // Jour consécutif
+    const newStreak = streakData.streak + 1;
+    await kv.set(streakKey, { lastVisit: today, streak: newStreak });
+    return newStreak;
+  }
+  
+  // Streak cassé
+  await kv.set(streakKey, { lastVisit: today, streak: 1 });
+  return 1;
+}
 
 // --- GESTION DE L'ÉTAT DU JOUR ---
 async function getGameState() {
@@ -84,7 +120,6 @@ app.post('/api/oauth/token', async (req, res) => {
   }
 });
 
-// FIX: Cette route doit recevoir le token dans le body, pas dans les headers
 app.post('/api/user/profile', async (req, res) => {
   try {
     const { access_token } = req.body;
@@ -98,11 +133,22 @@ app.post('/api/user/profile', async (req, res) => {
       }
     });
     const data = await response.json();
-    console.log("X API Response:", data); // Pour debug
+    console.log("X API Response:", data);
     res.json(data);
   } catch (err) { 
     console.error("Profile error:", err);
     res.status(500).json({ error: err.message }); 
+  }
+});
+
+// --- NOUVELLE ROUTE: GET STREAK ---
+app.get('/api/user/streak/:username', async (req, res) => {
+  try {
+    const streak = await updateUserStreak(req.params.username);
+    res.json({ streak });
+  } catch (err) {
+    console.error("Streak error:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -114,14 +160,27 @@ app.post('/api/game/generate', async (req, res) => {
   const today = getTodayUTC();
   const limitKey = `limit:${username}:${today}`;
 
+  // Mettre à jour le streak à chaque génération
+  const streak = await updateUserStreak(username);
+
   const savedId = await kv.get(limitKey);
   if (savedId !== null) {
-    return res.json({ status: "ALREADY", messageId: savedId, text: MASSA_TRUTHS[savedId] });
+    return res.json({ 
+      status: "ALREADY", 
+      messageId: savedId, 
+      text: MASSA_TRUTHS[savedId],
+      streak 
+    });
   }
 
   const messageId = Math.floor(Math.random() * MASSA_TRUTHS.length);
   await kv.set(limitKey, messageId);
-  res.json({ status: "SUCCESS", messageId, text: MASSA_TRUTHS[messageId] });
+  res.json({ 
+    status: "SUCCESS", 
+    messageId, 
+    text: MASSA_TRUTHS[messageId],
+    streak 
+  });
 });
 
 // 2. Soumettre le lien (Scenario A & B)
