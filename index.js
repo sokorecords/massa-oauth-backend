@@ -378,6 +378,7 @@ app.post('/api/game/submit', async (req, res) => {
     // Pas trouvé
     await setUserStatus(username, {
       ...userStatus,
+      submitted: true, // IMPORTANT: marquer comme soumis
       claimStatus: "not_found"
     });
 
