@@ -41,6 +41,19 @@ const getYesterdayUTC = () => {
   return yesterday.toISOString().split('T')[0];
 };
 
+// MODE DEBUG: Mettre à true pour tester
+const DEBUG_MODE = process.env.DEBUG_MODE === "true" || false;
+
+// Helper pour date de test
+function getTestDate() {
+  if (DEBUG_MODE) {
+    // En mode debug, on peut simuler différents jours
+    const testDate = process.env.TEST_DATE || getTodayUTC();
+    return testDate;
+  }
+  return getTodayUTC();
+}
+
 // --- STREAK ---
 async function updateUserStreak(username) {
   const today = getTodayUTC();
@@ -61,6 +74,16 @@ async function updateUserStreak(username) {
   if (streakData.lastVisit === yesterday) {
     const newStreak = streakData.streak + 1;
     await kv.set(streakKey, { lastVisit: today, streak: newStreak });
+    
+    // Alerte Telegram pour les milestones (30 jours)
+    if (newStreak === 30 || newStreak === 31 || newStreak === 60 || newStreak === 90) {
+      sendTelegramAlert(
+        `<b>🔥 STREAK MILESTONE! 🔥</b>\n\n` +
+        `User @${username} reached a ${newStreak}-day streak!\n` +
+        `True dedication to the MassArmy! 🚀`
+      );
+    }
+    
     return newStreak;
   }
   
@@ -93,15 +116,39 @@ async function getGameState() {
 
 // --- USER STATUS ---
 async function getUserStatus(username) {
-  const today = getTodayUTC();
+  const today = DEBUG_MODE ? getTestDate() : getTodayUTC();
   const statusKey = `status:${username}:${today}`;
   return await kv.get(statusKey);
 }
 
 async function setUserStatus(username, status) {
-  const today = getTodayUTC();
+  const today = DEBUG_MODE ? getTestDate() : getTodayUTC();
   const statusKey = `status:${username}:${today}`;
   await kv.set(statusKey, status);
+}
+
+// ROUTE DEBUG UNIQUEMENT - À SUPPRIMER EN PRODUCTION
+if (DEBUG_MODE) {
+  app.post('/api/debug/reset-user', async (req, res) => {
+    const { username } = req.body;
+    const today = getTestDate();
+    
+    await kv.del(`status:${username}:${today}`);
+    await kv.del(`limit:${username}:${today}`);
+    
+    res.json({ message: `User ${username} reset for ${today}` });
+  });
+
+  app.post('/api/debug/reset-day', async (req, res) => {
+    await kv.del('gameState');
+    res.json({ message: 'Game state reset' });
+  });
+
+  app.post('/api/debug/clear-collection', async (req, res) => {
+    const { username } = req.body;
+    await kv.del(`user:collection:${username}`);
+    res.json({ message: `Collection cleared for ${username}` });
+  });
 }
 
 // --- ROUTES AUTH ---
@@ -163,13 +210,16 @@ app.post('/api/game/generate', async (req, res) => {
   const userStatus = await getUserStatus(username);
   const gameState = await getGameState();
 
+  console.log(`[Generate] User: ${username}, Status:`, userStatus);
+
   // Si déjà généré aujourd'hui
   if (userStatus?.messageId !== undefined) {
+    console.log(`[Generate] User already generated today`);
     return res.json({ 
       status: "ALREADY_GENERATED", 
       messageId: userStatus.messageId,
       text: MASSA_TRUTHS[userStatus.messageId],
-      userStatus,
+      userStatus, // IMPORTANT: retourner le userStatus complet
       pioneer: gameState.pioneer,
       streak 
     });
@@ -178,16 +228,21 @@ app.post('/api/game/generate', async (req, res) => {
   // Générer nouveau message
   const messageId = Math.floor(Math.random() * MASSA_TRUTHS.length);
   
-  await setUserStatus(username, {
+  const newStatus = {
     messageId,
     submitted: false,
     claimStatus: "pending" // pending | not_found | pioneer | follower
-  });
+  };
+  
+  await setUserStatus(username, newStatus);
+
+  console.log(`[Generate] New message generated for ${username}`);
 
   res.json({ 
     status: "NEW_MESSAGE", 
     messageId, 
     text: MASSA_TRUTHS[messageId],
+    userStatus: newStatus, // IMPORTANT: retourner le nouveau status
     pioneer: gameState.pioneer,
     streak 
   });
