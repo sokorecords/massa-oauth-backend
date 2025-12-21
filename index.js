@@ -43,9 +43,6 @@ const getYesterdayUTC = () => {
 
 // MODE DEBUG: Mettre à true pour tester
 const DEBUG_MODE = process.env.DEBUG_MODE === "true" || false;
-if (DEBUG_MODE) {
-  console.log("⚠️ DEBUG MODE ACTIVATED");
-}
 
 // Helper pour date de test
 function getTestDate() {
@@ -410,4 +407,3 @@ app.get('/api/game/status', async (req, res) => {
 });
 
 export default app;
-
