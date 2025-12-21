@@ -405,8 +405,6 @@ app.get('/api/game/status', async (req, res) => {
     fragmentAvailable: gameState.activeFragmentIndex !== null
   });
 });
-
-export default app;
 // ========================================
 // ROUTES DEBUG - À RETIRER EN PRODUCTION
 // ========================================
@@ -530,3 +528,5 @@ app.post('/api/test/fix-status', async (req, res) => {
 });
 
 export default app;
+
+
