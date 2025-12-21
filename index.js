@@ -229,6 +229,32 @@ app.post('/api/game/generate', async (req, res) => {
   });
 });
 
+// Route pour vérifier l'état sans générer
+app.post('/api/game/check-status', async (req, res) => {
+  const { username } = req.body;
+  
+  const userStatus = await getUserStatus(username);
+  const gameState = await getGameState();
+  
+  // Si pas de statut, retourner null
+  if (!userStatus) {
+    return res.json({
+      status: "NO_STATUS",
+      userStatus: null,
+      pioneer: gameState.pioneer
+    });
+  }
+  
+  // Retourner le statut existant
+  res.json({
+    status: userStatus.messageId !== undefined ? "HAS_STATUS" : "NO_STATUS",
+    messageId: userStatus.messageId,
+    text: userStatus.messageId !== undefined ? MASSA_TRUTHS[userStatus.messageId] : null,
+    userStatus,
+    pioneer: gameState.pioneer
+  });
+});
+
 // 2. Submit link
 app.post('/api/game/submit', async (req, res) => {
   const { username, tweetUrl, isRepost } = req.body;
@@ -500,6 +526,28 @@ if (DEBUG_MODE) {
       globalRevealed,
       totalRevealed: globalRevealed ? globalRevealed.length : 0,
       remaining: 53 - (globalRevealed ? globalRevealed.length : 0)
+    });
+  });
+  
+  // FORCER le prochain message à être gagnant (pour tester)
+  app.post('/api/debug/force-win', async (req, res) => {
+    const { username } = req.body;
+    
+    const userStatus = await getUserStatus(username);
+    const gameState = await getGameState();
+    
+    if (!userStatus?.messageId) {
+      return res.status(400).json({ error: "User must generate a message first" });
+    }
+    
+    // Modifier le gameState pour que le messageId de l'user soit le gagnant
+    gameState.winningMessageId = userStatus.messageId;
+    await kv.set('gameState', gameState);
+    
+    res.json({ 
+      message: `${username}'s message is now the winning one!`,
+      messageId: userStatus.messageId,
+      winningMessageId: gameState.winningMessageId
     });
   });
 }
