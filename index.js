@@ -407,3 +407,126 @@ app.get('/api/game/status', async (req, res) => {
 });
 
 export default app;
+// ========================================
+// ROUTES DEBUG - À RETIRER EN PRODUCTION
+// ========================================
+
+// Activer le mode debug via variable d'environnement
+const DEBUG_MODE = process.env.DEBUG_MODE === "true" || false;
+
+if (DEBUG_MODE) {
+  console.log("⚠️ DEBUG MODE ACTIVATED");
+  
+  // Reset les actions d'un utilisateur pour aujourd'hui
+  app.post('/api/debug/reset-user', async (req, res) => {
+    const { username } = req.body;
+    const today = getTodayUTC();
+    
+    await kv.del(`status:${username}:${today}`);
+    
+    res.json({ 
+      message: `User ${username} reset for ${today}`,
+      username,
+      date: today
+    });
+  });
+
+  // Reset l'état global du jeu (nouveau fragment)
+  app.post('/api/debug/reset-game', async (req, res) => {
+    await kv.del('gameState');
+    res.json({ message: 'Game state reset - new fragment will be selected' });
+  });
+
+  // Vider la collection d'un utilisateur
+  app.post('/api/debug/clear-collection', async (req, res) => {
+    const { username } = req.body;
+    await kv.del(`user:collection:${username}`);
+    res.json({ message: `Collection cleared for ${username}` });
+  });
+  
+  // Simuler qu'un utilisateur a soumis sans succès
+  app.post('/api/debug/simulate-submitted', async (req, res) => {
+    const { username } = req.body;
+    const today = getTodayUTC();
+    
+    await setUserStatus(username, {
+      messageId: Math.floor(Math.random() * MASSA_TRUTHS.length),
+      submitted: true,
+      claimStatus: "not_found",
+      firstTweetUrl: "https://x.com/test/status/123456"
+    });
+    
+    res.json({ message: `${username} set to "submitted without success"` });
+  });
+  
+  // Simuler qu'un pionnier a trouvé
+  app.post('/api/debug/simulate-pioneer', async (req, res) => {
+    const { username, tweetUrl } = req.body;
+    const gameState = await getGameState();
+    
+    if (!gameState.activeFragmentIndex) {
+      return res.status(400).json({ error: "No active fragment" });
+    }
+    
+    const char = PRIVATE_KEY_CHARS[gameState.activeFragmentIndex];
+    
+    gameState.pioneer = {
+      username: username || "TestPioneer",
+      url: tweetUrl || "https://x.com/test/status/999999",
+      index: gameState.activeFragmentIndex,
+      char
+    };
+    
+    await kv.set('gameState', gameState);
+    await kv.sadd('global:revealed_indices', gameState.activeFragmentIndex.toString());
+    
+    res.json({ 
+      message: `Pioneer set!`,
+      pioneer: gameState.pioneer
+    });
+  });
+  
+  // Voir l'état actuel d'un utilisateur
+  app.get('/api/debug/user-status/:username', async (req, res) => {
+    const userStatus = await getUserStatus(req.params.username);
+    const collection = await kv.smembers(`user:collection:${req.params.username}`);
+    const streak = await kv.get(`streak:${req.params.username}`);
+    
+    res.json({
+      userStatus,
+      collection,
+      streak
+    });
+  });
+  
+  // Voir l'état global du jeu
+  app.get('/api/debug/game-state', async (req, res) => {
+    const gameState = await getGameState();
+    const globalRevealed = await kv.smembers('global:revealed_indices');
+    
+    res.json({
+      gameState,
+      globalRevealed,
+      totalRevealed: globalRevealed.length,
+      remaining: 53 - globalRevealed.length
+    });
+  });
+}
+
+// Toujours disponible : fix status (utile pour corriger des bugs)
+app.post('/api/test/fix-status', async (req, res) => {
+  const { username } = req.body;
+  const today = getTodayUTC();
+  const statusKey = `status:${username}:${today}`;
+  
+  const current = await kv.get(statusKey);
+  if (current && current.claimStatus === "not_found") {
+    current.submitted = true;
+    await kv.set(statusKey, current);
+    res.json({ message: 'Status fixed!', status: current });
+  } else {
+    res.json({ message: 'Nothing to fix', status: current });
+  }
+});
+
+export default app;
