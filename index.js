@@ -405,5 +405,16 @@ app.get('/api/game/status', async (req, res) => {
     fragmentAvailable: gameState.activeFragmentIndex !== null
   });
 });
+// TEST - en dehors du if (DEBUG_MODE)
+app.get('/api/test-alive', (req, res) => {
+  res.json({ 
+    message: 'Backend alive',
+    debugMode: DEBUG_MODE,
+    env: process.env.DEBUG_MODE 
+  });
+});
 
 export default app;
+
+
+
