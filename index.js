@@ -281,35 +281,45 @@ app.post('/api/game/submit', async (req, res) => {
     });
   }
 
-  // CAS 1: Repost
+  // CAS 1: Repost - l'utilisateur essaie de claim via repost du pionnier
   if (isRepost && gameState.pioneer) {
-    if (userStatus?.firstTweetUrl && tweetUrl !== userStatus.firstTweetUrl) {
-      if (urlUsername !== username.toLowerCase()) {
-        return res.status(400).json({ 
-          error: `This post belongs to @${urlUsername}, not @${username}. Please submit YOUR repost link.`
-        });
-      }
-      
-      const clue = `${gameState.pioneer.index}:${gameState.pioneer.char}`;
-      await kv.sadd(`user:collection:${username}`, clue);
-      
-      await setUserStatus(username, {
-        ...userStatus,
-        claimStatus: "follower",
-        repostUrl: tweetUrl
-      });
-
-      return res.json({ 
-        status: "FOLLOWER_SUCCESS",
-        char: gameState.pioneer.char,
-        index: gameState.pioneer.index,
-        message: "Fragment unlocked! A new character has been added to your table."
-      });
-    } else {
+    // Vérifier que l'utilisateur a déjà soumis son propre tweet
+    if (!userStatus?.firstTweetUrl) {
       return res.status(400).json({ 
-        error: "Please submit your repost link, not your original post." 
+        error: "You must first share your own generated message before claiming via repost."
       });
     }
+    
+    // Vérifier que ce n'est pas son propre tweet original
+    if (tweetUrl === userStatus.firstTweetUrl) {
+      return res.status(400).json({ 
+        error: "Please submit your REPOST link of the pioneer's message, not your original post."
+      });
+    }
+    
+    // Vérifier que le repost appartient bien à l'utilisateur
+    if (urlUsername !== username.toLowerCase()) {
+      return res.status(400).json({ 
+        error: `This post belongs to @${urlUsername}. Please submit YOUR repost link from your @${username} account.`
+      });
+    }
+    
+    // Tout est OK, débloquer le fragment
+    const clue = `${gameState.pioneer.index}:${gameState.pioneer.char}`;
+    await kv.sadd(`user:collection:${username}`, clue);
+    
+    await setUserStatus(username, {
+      ...userStatus,
+      claimStatus: "follower",
+      repostUrl: tweetUrl
+    });
+
+    return res.json({ 
+      status: "FOLLOWER_SUCCESS",
+      char: gameState.pioneer.char,
+      index: gameState.pioneer.index,
+      message: "Fragment unlocked! A new character has been added to your table."
+    });
   }
 
   // CAS 2: Première soumission
@@ -380,7 +390,7 @@ app.post('/api/game/submit', async (req, res) => {
 
     return res.json({ 
       status: "NOT_FOUND",
-      message: "Today's fragment remains hidden. Keep an eye on the MassArmy Telegram – another pioneer might reveal it soon! If someone finds it, come back here to repost their message and unlock the fragment for yourself."
+      message: "Today's fragment remains hidden. Keep an eye on the MassArmy Telegram — another pioneer might reveal it soon! If someone finds it, come back here to repost their message and unlock the fragment for yourself."
     });
   }
 
@@ -400,6 +410,44 @@ app.get('/api/game/status', async (req, res) => {
     pioneer: gameState.pioneer,
     fragmentAvailable: gameState.activeFragmentIndex !== null
   });
+});
+
+// ========================================
+// ADMIN ROUTES
+// ========================================
+
+// Route pour obtenir tous les utilisateurs et leurs progressions
+app.get('/api/admin/all-users', async (req, res) => {
+  try {
+    const today = getTodayUTC();
+    
+    // Récupérer tous les utilisateurs qui ont une collection
+    const allKeys = await kv.keys('user:collection:*');
+    const users = [];
+    
+    for (const key of allKeys) {
+      const username = key.replace('user:collection:', '');
+      const collection = await kv.smembers(key);
+      const streak = await kv.get(`streak:${username}`);
+      const status = await kv.get(`status:${username}:${today}`);
+      
+      users.push({
+        username,
+        fragmentsCount: collection ? collection.length : 0,
+        collection: collection || [],
+        streak: streak?.streak || 0,
+        lastActive: streak?.lastVisit || null,
+        status: status
+      });
+    }
+    
+    // Trier par nombre de fragments (décroissant)
+    users.sort((a, b) => b.fragmentsCount - a.fragmentsCount);
+    
+    res.json({ users, count: users.length });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ========================================
