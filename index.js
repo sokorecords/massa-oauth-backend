@@ -421,9 +421,8 @@ function showRepostInterface(pioneer) {
     const pioneerLink = document.getElementById("pioneerLink");
     const gameFeedback = document.getElementById("gameFeedback");
     const submitArea = document.getElementById("submitArea");
-    const tweetUrlInput = document.getElementById("tweetUrl");
+    const repostUrlInput = document.getElementById("repostUrl");
     const shareBtn = document.getElementById("shareBtn");
-    const submitBtn = document.getElementById("submitBtn");
     
     if (unlockArea) unlockArea.classList.remove("hidden");
     if (pioneerUser) pioneerUser.textContent = pioneer.username;
@@ -442,25 +441,20 @@ function showRepostInterface(pioneer) {
         shareBtn.style.opacity = "0.6";
     }
     
-    // Masquer le bouton "Check for Fragment"
-    if (submitBtn) {
-        submitBtn.style.display = "none";
-    }
-    
     // Réinitialiser le champ de saisie pour le repost
-    if (tweetUrlInput) {
-        tweetUrlInput.value = "";
-        tweetUrlInput.placeholder = "Paste YOUR repost link here (from your profile)";
+    if (repostUrlInput) {
+        repostUrlInput.value = "";
     }
     
     if (gameFeedback) {
         gameFeedback.innerHTML = `
-            <div style="text-align: left; line-height: 1.8;">
-                <strong>📋 How to unlock this fragment:</strong><br>
-                1️⃣ Click "View Pioneer's Post" above<br>
+            <div style="text-align: left; line-height: 1.8; margin-bottom: 1.5rem;">
+                <strong style="color: #f59e0b; font-size: 1.2rem;">🎉 Today's fragment has been discovered!</strong><br><br>
+                <strong>📋 How to unlock it for yourself:</strong><br>
+                1️⃣ Click "View Pioneer's Post" below<br>
                 2️⃣ Repost their message on X<br>
                 3️⃣ Go to YOUR profile and copy the link of YOUR repost<br>
-                4️⃣ Paste it below and click "I have reposted"
+                4️⃣ Paste it in the field below and click "I have reposted"
             </div>
         `;
         gameFeedback.style.color = "#f59e0b";
@@ -524,7 +518,7 @@ async function submitTweet() {
 }
 
 async function unlockFragment() {
-    const tweetUrl = document.getElementById("tweetUrl")?.value.trim();
+    const tweetUrl = document.getElementById("repostUrl")?.value.trim();
     if (!tweetUrl) {
         alert("Please paste your repost link");
         return;
