@@ -68,6 +68,7 @@ async function updateUserStreak(username) {
     const newStreak = streakData.streak + 1;
     await kv.set(streakKey, { lastVisit: today, streak: newStreak });
     
+    // Alerte Telegram pour les milestones
     if (newStreak === 30 || newStreak === 31 || newStreak === 60 || newStreak === 90) {
       sendTelegramAlert(
         `<b>🔥 STREAK MILESTONE! 🔥</b>\n\n` +
@@ -93,14 +94,18 @@ async function getGameState() {
     const remainingIndices = PRIVATE_KEY_CHARS.map((_, i) => i)
                                .filter(i => !globalRevealed.includes(i.toString()));
 
+    // CARRY-OVER: Garder le fragment actif si non trouvé
     let activeFragment = null;
     if (state?.pioneer) {
+      // Fragment trouvé hier, en choisir un nouveau
       activeFragment = remainingIndices.length > 0 
         ? remainingIndices[Math.floor(Math.random() * remainingIndices.length)] 
         : null;
     } else if (state?.activeFragmentIndex !== null && state?.activeFragmentIndex !== undefined) {
+      // Fragment pas trouvé hier, le garder (CARRY-OVER)
       activeFragment = state.activeFragmentIndex;
     } else {
+      // Première fois ou état corrompu
       activeFragment = remainingIndices.length > 0 
         ? remainingIndices[Math.floor(Math.random() * remainingIndices.length)] 
         : null;
@@ -179,6 +184,8 @@ app.get('/api/user/streak/:username', async (req, res) => {
 });
 
 // --- GAME LOGIC ---
+
+// 1. Generate message
 app.post('/api/game/generate', async (req, res) => {
   const { username } = req.body;
   
@@ -186,7 +193,10 @@ app.post('/api/game/generate', async (req, res) => {
   const userStatus = await getUserStatus(username);
   const gameState = await getGameState();
 
+  console.log(`[Generate] User: ${username}, Status:`, userStatus);
+
   if (userStatus?.messageId !== undefined) {
+    console.log(`[Generate] User already generated today`);
     return res.json({ 
       status: "ALREADY_GENERATED", 
       messageId: userStatus.messageId,
@@ -207,6 +217,8 @@ app.post('/api/game/generate', async (req, res) => {
   
   await setUserStatus(username, newStatus);
 
+  console.log(`[Generate] New message generated for ${username}`);
+
   res.json({ 
     status: "NEW_MESSAGE", 
     messageId, 
@@ -217,12 +229,14 @@ app.post('/api/game/generate', async (req, res) => {
   });
 });
 
+// Route pour vérifier l'état sans générer
 app.post('/api/game/check-status', async (req, res) => {
   const { username } = req.body;
   
   const userStatus = await getUserStatus(username);
   const gameState = await getGameState();
   
+  // Si pas de statut, retourner null
   if (!userStatus) {
     return res.json({
       status: "NO_STATUS",
@@ -231,6 +245,7 @@ app.post('/api/game/check-status', async (req, res) => {
     });
   }
   
+  // Retourner le statut existant
   res.json({
     status: userStatus.messageId !== undefined ? "HAS_STATUS" : "NO_STATUS",
     messageId: userStatus.messageId,
@@ -240,6 +255,7 @@ app.post('/api/game/check-status', async (req, res) => {
   });
 });
 
+// 2. Submit link
 app.post('/api/game/submit', async (req, res) => {
   const { username, tweetUrl, isRepost } = req.body;
   
@@ -265,25 +281,30 @@ app.post('/api/game/submit', async (req, res) => {
     });
   }
 
+  // CAS 1: Repost - l'utilisateur essaie de claim via repost du pionnier
   if (isRepost && gameState.pioneer) {
+    // Vérifier que l'utilisateur a déjà soumis son propre tweet
     if (!userStatus?.firstTweetUrl) {
       return res.status(400).json({ 
         error: "You must first share your own generated message before claiming via repost."
       });
     }
     
+    // Vérifier que ce n'est pas son propre tweet original
     if (tweetUrl === userStatus.firstTweetUrl) {
       return res.status(400).json({ 
         error: "Please submit your REPOST link of the pioneer's message, not your original post."
       });
     }
     
+    // Vérifier que le repost appartient bien à l'utilisateur
     if (urlUsername !== username.toLowerCase()) {
       return res.status(400).json({ 
         error: `This post belongs to @${urlUsername}. Please submit YOUR repost link from your @${username} account.`
       });
     }
     
+    // Tout est OK, débloquer le fragment
     const clue = `${gameState.pioneer.index}:${gameState.pioneer.char}`;
     await kv.sadd(`user:collection:${username}`, clue);
     
@@ -301,6 +322,7 @@ app.post('/api/game/submit', async (req, res) => {
     });
   }
 
+  // CAS 2: Première soumission
   if (!userStatus?.submitted) {
     if (urlUsername !== username.toLowerCase()) {
       return res.status(400).json({ 
@@ -368,18 +390,20 @@ app.post('/api/game/submit', async (req, res) => {
 
     return res.json({ 
       status: "NOT_FOUND",
-      message: "Today's fragment remains hidden. Keep an eye on the MassArmy Telegram — another pioneer might reveal it soon!"
+      message: "Today's fragment remains hidden. Keep an eye on the MassArmy Telegram — another pioneer might reveal it soon! If someone finds it, come back here to repost their message and unlock the fragment for yourself."
     });
   }
 
   res.status(400).json({ error: "You have already submitted your post for today." });
 });
 
+// 3. Get user collection
 app.get('/api/user/collection/:username', async (req, res) => {
   const data = await kv.smembers(`user:collection:${req.params.username}`);
   res.json({ collection: data || [] });
 });
 
+// 4. Get game status
 app.get('/api/game/status', async (req, res) => {
   const gameState = await getGameState();
   res.json({ 
@@ -388,32 +412,38 @@ app.get('/api/game/status', async (req, res) => {
   });
 });
 
-// --- ADMIN ROUTES ---
+// ========================================
+// ADMIN ROUTES
+// ========================================
+
+// Middleware de vérification admin
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "changeme123";
 
 function verifyAdmin(req, res, next) {
   const authHeader = req.headers.authorization;
   
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    return res.status(401).json({ error: 'Unauthorized - No token provided' });
   }
   
-  const token = authHeader.substring(7);
+  const token = authHeader.substring(7); // Enlever "Bearer "
   
   if (token !== ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    return res.status(401).json({ error: 'Unauthorized - Invalid token' });
   }
   
   next();
 }
 
+// Route de login admin
 app.post('/api/admin/login', async (req, res) => {
   const { password } = req.body;
   
   if (password === ADMIN_PASSWORD) {
     res.json({ 
       success: true,
-      token: ADMIN_PASSWORD
+      token: ADMIN_PASSWORD,
+      message: 'Login successful'
     });
   } else {
     res.status(401).json({ 
@@ -423,9 +453,12 @@ app.post('/api/admin/login', async (req, res) => {
   }
 });
 
+// Route pour obtenir tous les utilisateurs et leurs progressions (PROTÉGÉE)
 app.get('/api/admin/all-users', verifyAdmin, async (req, res) => {
   try {
     const today = getTodayUTC();
+    
+    // Récupérer tous les utilisateurs qui ont une collection
     const allKeys = await kv.keys('user:collection:*');
     const users = [];
     
@@ -445,6 +478,7 @@ app.get('/api/admin/all-users', verifyAdmin, async (req, res) => {
       });
     }
     
+    // Trier par nombre de fragments (décroissant)
     users.sort((a, b) => b.fragmentsCount - a.fragmentsCount);
     
     res.json({ users, count: users.length });
@@ -453,40 +487,83 @@ app.get('/api/admin/all-users', verifyAdmin, async (req, res) => {
   }
 });
 
-// --- DEBUG ROUTES ---
+// ========================================
+// ROUTES DEBUG
+// ========================================
+
 if (DEBUG_MODE) {
+  console.log("Loading DEBUG routes...");
+  
+  // Reset les actions d'un utilisateur pour aujourd'hui
   app.post('/api/debug/reset-user', async (req, res) => {
     const { username } = req.body;
     const today = getTodayUTC();
+    
     await kv.del(`status:${username}:${today}`);
-    res.json({ message: `User ${username} reset` });
+    
+    res.json({ 
+      message: `User ${username} reset for ${today}`,
+      username,
+      date: today
+    });
   });
 
+  // Reset l'état global du jeu
   app.post('/api/debug/reset-game', async (req, res) => {
+    const today = getTodayUTC();
+    
     await kv.del('gameState');
-    const gameState = await getGameState();
-    res.json({ message: 'Game reset', gameState });
+    
+    const globalRevealed = await kv.smembers('global:revealed_indices') || [];
+    const remainingIndices = PRIVATE_KEY_CHARS.map((_, i) => i)
+                               .filter(i => !globalRevealed.includes(i.toString()));
+
+    const newState = {
+      lastUpdate: today,
+      activeFragmentIndex: remainingIndices.length > 0 
+        ? remainingIndices[Math.floor(Math.random() * remainingIndices.length)] 
+        : null,
+      winningMessageId: Math.floor(Math.random() * MASSA_TRUTHS.length),
+      pioneer: null
+    };
+    
+    await kv.set('gameState', newState);
+    
+    res.json({ 
+      message: 'Game state reset - new fragment selected',
+      newState: {
+        fragmentIndex: newState.activeFragmentIndex,
+        winningMessageId: newState.winningMessageId,
+        totalRevealed: globalRevealed.length,
+        remaining: remainingIndices.length
+      }
+    });
   });
 
+  // Vider la collection d'un utilisateur
   app.post('/api/debug/clear-collection', async (req, res) => {
     const { username } = req.body;
     await kv.del(`user:collection:${username}`);
-    res.json({ message: 'Collection cleared' });
+    res.json({ message: `Collection cleared for ${username}` });
   });
-
+  
+  // Simuler qu'un utilisateur a soumis sans succès
   app.post('/api/debug/simulate-submitted', async (req, res) => {
     const { username } = req.body;
+    
     await setUserStatus(username, {
-      messageId: 0,
+      messageId: Math.floor(Math.random() * MASSA_TRUTHS.length),
       submitted: true,
       claimStatus: "not_found",
-      firstTweetUrl: "https://x.com/test/123"
+      firstTweetUrl: "https://x.com/test/status/123456"
     });
-    res.json({ message: 'Submitted simulated' });
+    
+    res.json({ message: `${username} set to "submitted without success"` });
   });
-
+  
+  // Simuler qu'un pionnier a trouvé
   app.post('/api/debug/simulate-pioneer', async (req, res) => {
-    const { username } = req.body;
+    const { username, tweetUrl } = req.body;
     const gameState = await getGameState();
     
     if (gameState.activeFragmentIndex === null) {
@@ -494,9 +571,10 @@ if (DEBUG_MODE) {
     }
     
     const char = PRIVATE_KEY_CHARS[gameState.activeFragmentIndex];
+    
     gameState.pioneer = {
       username: username || "TestPioneer",
-      url: "https://x.com/test/999",
+      url: tweetUrl || "https://x.com/test/status/999999",
       index: gameState.activeFragmentIndex,
       char
     };
@@ -504,17 +582,26 @@ if (DEBUG_MODE) {
     await kv.set('gameState', gameState);
     await kv.sadd('global:revealed_indices', gameState.activeFragmentIndex.toString());
     
-    res.json({ message: 'Pioneer simulated', pioneer: gameState.pioneer });
+    res.json({ 
+      message: `Pioneer set!`,
+      pioneer: gameState.pioneer
+    });
   });
-
+  
+  // Voir l'état actuel d'un utilisateur
   app.get('/api/debug/user-status/:username', async (req, res) => {
     const userStatus = await getUserStatus(req.params.username);
     const collection = await kv.smembers(`user:collection:${req.params.username}`);
     const streak = await kv.get(`streak:${req.params.username}`);
     
-    res.json({ userStatus, collection, streak });
+    res.json({
+      userStatus,
+      collection,
+      streak
+    });
   });
-
+  
+  // Voir l'état global du jeu
   app.get('/api/debug/game-state', async (req, res) => {
     const gameState = await getGameState();
     const globalRevealed = await kv.smembers('global:revealed_indices');
@@ -526,25 +613,53 @@ if (DEBUG_MODE) {
       remaining: 53 - (globalRevealed ? globalRevealed.length : 0)
     });
   });
-
+  
+  // FORCER le prochain message à être gagnant (pour tester)
   app.post('/api/debug/force-win', async (req, res) => {
     const { username } = req.body;
+    
     const userStatus = await getUserStatus(username);
     const gameState = await getGameState();
     
     if (!userStatus?.messageId) {
-      return res.status(400).json({ error: "Generate message first" });
+      return res.status(400).json({ error: "User must generate a message first" });
     }
     
+    // Modifier le gameState pour que le messageId de l'user soit le gagnant
     gameState.winningMessageId = userStatus.messageId;
     await kv.set('gameState', gameState);
     
-    res.json({ message: 'Forced win', messageId: userStatus.messageId });
+    res.json({ 
+      message: `${username}'s message is now the winning one!`,
+      messageId: userStatus.messageId,
+      winningMessageId: gameState.winningMessageId
+    });
   });
 }
 
+// Route toujours disponible
+app.post('/api/test/fix-status', async (req, res) => {
+  const { username } = req.body;
+  const today = getTodayUTC();
+  const statusKey = `status:${username}:${today}`;
+  
+  const current = await kv.get(statusKey);
+  if (current && current.claimStatus === "not_found") {
+    current.submitted = true;
+    await kv.set(statusKey, current);
+    res.json({ message: 'Status fixed!', status: current });
+  } else {
+    res.json({ message: 'Nothing to fix', status: current });
+  }
+});
+
+// TEST - Route de diagnostic
 app.get('/api/test-alive', (req, res) => {
-  res.json({ message: 'Backend alive', debugMode: DEBUG_MODE });
+  res.json({ 
+    message: 'Backend alive',
+    debugMode: DEBUG_MODE,
+    env: process.env.DEBUG_MODE 
+  });
 });
 
 export default app;
