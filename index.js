@@ -1,721 +1,550 @@
-// script.js – Version finale avec tous les scénarios
+import express from 'express';
+import cors from 'cors';
+import { kv } from '@vercel/kv';
+import { MASSA_TRUTHS } from './truths.js';
 
-const CLIENT_ID = "SHFXVndGU2ZBRk1GbzlpWlFJR1Q6MTpjaQ";
-const REDIRECT_URI = window.location.origin; 
-const BACKEND_BASE = "https://massa-oauth-backend.vercel.app";
+const app = express();
 
-let userData = {
-  clues: Array(53).fill(null),
-  username: "",
-  avatar: "",
-  streak: 0
-};
-
-let currentState = {
-  messageText: "",
-  messageId: null,
-  userStatus: null,
-  pioneer: null
-};
-
-let isLoadingState = false; // Flag pour savoir si on charge l'état initial
-
-// --- UTILS ---
-function manualBase64UrlEncode(buffer) {
-  const base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-  let output = "";
-  const bytes = new Uint8Array(buffer);
-  const len = bytes.byteLength;
-  let i = 0;
-  while (i < len) {
-    const chr1 = bytes[i++];
-    const chr2 = i < len ? bytes[i++] : NaN;
-    const chr3 = i < len ? bytes[i++] : NaN;
-    const enc1 = chr1 >> 2;
-    const enc2 = ((chr1 & 3) << 4) | (isNaN(chr2) ? 0 : chr2 >> 4);
-    const enc3 = isNaN(chr2) ? 64 : ((chr2 & 15) << 2) | (isNaN(chr3) ? 0 : chr3 >> 6);
-    const enc4 = isNaN(chr3) ? 64 : chr3 & 63;
-    output += base64Chars.charAt(enc1) + base64Chars.charAt(enc2);
-    if (enc3 < 64) output += base64Chars.charAt(enc3);
-    if (enc4 < 64) output += base64Chars.charAt(enc4);
-  }
-  return output;
+// MODE DEBUG: Mettre à true pour tester
+const DEBUG_MODE = process.env.DEBUG_MODE === "true" || false;
+if (DEBUG_MODE) {
+  console.log("⚠️ DEBUG MODE ACTIVATED");
 }
 
-// --- INIT ---
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOMContentLoaded fired");
-  const currentUrl = window.location.href;
+app.use(cors({
+  origin: 'https://spreadmassaquest.build.half-red.net',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
-  if (currentUrl.indexOf('code=') > -1) {
-    if (window.opener) {
-      window.opener.postMessage({ type: 'oauth_redirect', url: currentUrl }, window.location.origin);
-      window.close();
-      return;
-    } else {
-      handleOAuthCallback(currentUrl);
-    }
-  }
+app.use(express.json());
 
-  window.addEventListener("message", (event) => {
-    if (event.origin === window.location.origin && event.data.type === 'oauth_redirect') {
-      handleOAuthCallback(event.data.url);
-    }
-  });
+const PRIVATE_KEY_CHARS = (process.env.MASSA_PRIVATE_KEY || "").split("");
 
-  const saved = localStorage.getItem("smq_user");
-  console.log("LocalStorage content:", saved);
-  
-  if (saved) {
-    try {
-      userData = JSON.parse(saved);
-      console.log("Parsed userData:", userData);
-      
-      if (userData.username) {
-        console.log("Username found, calling showConnectedUI");
-        showConnectedUI();
-        fetchUserCollection();
-      } else {
-        console.log("No username in userData");
-      }
-    } catch(e) {
-      console.error("Error parsing localStorage:", e);
-      localStorage.removeItem("smq_user");
-    }
-  } else {
-    console.log("No saved data in localStorage");
-  }
-
-  setupEventListeners();
-  buildPeriodicTable();
-});
-
-// --- AUTH ---
-async function loginWithX() {
-  const state = Math.random().toString(36).substring(2, 15);
-  const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
-  const verifier = manualBase64UrlEncode(array.buffer);
-  
-  localStorage.setItem("x_oauth_state", state);
-  localStorage.setItem("x_code_verifier", verifier);
-
-  const encoder = new TextEncoder();
-  const data = encoder.encode(verifier);
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  const challenge = manualBase64UrlEncode(digest);
-
-  const authUrl = `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=tweet.read%20users.read%20offline.access&state=${state}&code_challenge=${challenge}&code_challenge_method=S256&force_login=true`;
-
-  if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-    window.location.href = authUrl;
-  } else {
-    window.open(authUrl, "x_login", "width=600,height=700");
-  }
-}
-
-async function handleOAuthCallback(urlStr) {
-  const url = new URL(urlStr);
-  const code = url.searchParams.get("code");
-  const state = url.searchParams.get("state");
-  const savedState = localStorage.getItem("x_oauth_state");
-  const verifier = localStorage.getItem("x_code_verifier");
-
-  if (!code || state !== savedState) return;
+// --- TELEGRAM WEBHOOK ---
+async function sendTelegramAlert(message) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
 
   try {
-    const tokenRes = await fetch(`${BACKEND_BASE}/api/oauth/token`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code, redirect_uri: REDIRECT_URI, code_verifier: verifier })
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'HTML' })
     });
-    
-    const tokenData = await tokenRes.json();
-    if (!tokenData.access_token) return;
-
-    const profRes = await fetch(`${BACKEND_BASE}/api/user/profile`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ access_token: tokenData.access_token })
-    });
-    
-    const profData = await profRes.json();
-    const user = profData.data || profData;
-    
-    if (!user.username && !user.screen_name) return;
-
-    userData.username = user.username || user.screen_name;
-    const rawAvatar = user.profile_image_url || "";
-    userData.avatar = rawAvatar ? rawAvatar.replace("_normal", "") : "";
-    
-    localStorage.setItem("smq_user", JSON.stringify(userData));
-    window.history.replaceState({}, document.title, "/");
-    showConnectedUI();
-    fetchUserCollection();
-    
-    localStorage.removeItem("x_oauth_state");
-    localStorage.removeItem("x_code_verifier");
-  } catch (err) { 
-    console.error("Auth error:", err);
+  } catch (err) {
+    console.error("Telegram Webhook Error:", err);
   }
 }
+
+// --- HELPERS ---
+const getTodayUTC = () => new Date().toISOString().split('T')[0];
+const getYesterdayUTC = () => {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return yesterday.toISOString().split('T')[0];
+};
+
+// --- STREAK ---
+async function updateUserStreak(username) {
+  const today = getTodayUTC();
+  const yesterday = getYesterdayUTC();
+  
+  const streakKey = `streak:${username}`;
+  const streakData = await kv.get(streakKey);
+  
+  if (!streakData) {
+    await kv.set(streakKey, { lastVisit: today, streak: 1 });
+    return 1;
+  }
+  
+  if (streakData.lastVisit === today) {
+    return streakData.streak;
+  }
+  
+  if (streakData.lastVisit === yesterday) {
+    const newStreak = streakData.streak + 1;
+    await kv.set(streakKey, { lastVisit: today, streak: newStreak });
+    
+    if (newStreak === 30 || newStreak === 31 || newStreak === 60 || newStreak === 90) {
+      sendTelegramAlert(
+        `<b>🔥 STREAK MILESTONE! 🔥</b>\n\n` +
+        `User @${username} reached a ${newStreak}-day streak!\n` +
+        `True dedication to the MassArmy! 🚀`
+      );
+    }
+    
+    return newStreak;
+  }
+  
+  await kv.set(streakKey, { lastVisit: today, streak: 1 });
+  return 1;
+}
+
+// --- GAME STATE ---
+async function getGameState() {
+  const today = getTodayUTC();
+  let state = await kv.get('gameState');
+
+  if (!state || state.lastUpdate !== today) {
+    const globalRevealed = await kv.smembers('global:revealed_indices') || [];
+    const remainingIndices = PRIVATE_KEY_CHARS.map((_, i) => i)
+                               .filter(i => !globalRevealed.includes(i.toString()));
+
+    let activeFragment = null;
+    if (state?.pioneer) {
+      activeFragment = remainingIndices.length > 0 
+        ? remainingIndices[Math.floor(Math.random() * remainingIndices.length)] 
+        : null;
+    } else if (state?.activeFragmentIndex !== null && state?.activeFragmentIndex !== undefined) {
+      activeFragment = state.activeFragmentIndex;
+    } else {
+      activeFragment = remainingIndices.length > 0 
+        ? remainingIndices[Math.floor(Math.random() * remainingIndices.length)] 
+        : null;
+    }
+
+    state = {
+      lastUpdate: today,
+      activeFragmentIndex: activeFragment,
+      winningMessageId: Math.floor(Math.random() * MASSA_TRUTHS.length),
+      pioneer: null
+    };
+    await kv.set('gameState', state);
+  }
+  return state;
+}
+
+// --- USER STATUS ---
+async function getUserStatus(username) {
+  const today = getTodayUTC();
+  const statusKey = `status:${username}:${today}`;
+  return await kv.get(statusKey);
+}
+
+async function setUserStatus(username, status) {
+  const today = getTodayUTC();
+  const statusKey = `status:${username}:${today}`;
+  await kv.set(statusKey, status);
+}
+
+// --- ROUTES AUTH ---
+app.post('/api/oauth/token', async (req, res) => {
+  const { code, redirect_uri, code_verifier } = req.body;
+  try {
+    const response = await fetch("https://api.x.com/2/oauth2/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: "SHFXVndGU2ZBRk1GbzlpWlFJR1Q6MTpjaQ",
+        code,
+        redirect_uri,
+        code_verifier
+      })
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) { 
+    res.status(500).json({ error: err.message }); 
+  }
+});
+
+app.post('/api/user/profile', async (req, res) => {
+  try {
+    const { access_token } = req.body;
+    if (!access_token) {
+      return res.status(400).json({ error: "Missing access_token" });
+    }
+    
+    const response = await fetch("https://api.x.com/2/users/me?user.fields=profile_image_url", {
+      headers: { "Authorization": `Bearer ${access_token}` }
+    });
+    const data = await response.json();
+    res.json(data);
+  } catch (err) { 
+    res.status(500).json({ error: err.message }); 
+  }
+});
+
+app.get('/api/user/streak/:username', async (req, res) => {
+  try {
+    const streak = await updateUserStreak(req.params.username);
+    res.json({ streak });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // --- GAME LOGIC ---
-
-async function generateTruth() {
-    if (!userData.username) {
-        alert("Please connect with X first");
-        return;
-    }
-    
-    const btn = document.getElementById("generateBtn");
-    if (btn) btn.disabled = true;
-    
-    try {
-        const res = await fetch(`${BACKEND_BASE}/api/game/generate`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: userData.username })
-        });
-        const data = await res.json();
-        
-        currentState.messageText = data.text;
-        currentState.messageId = data.messageId;
-        currentState.userStatus = data.userStatus;
-        currentState.pioneer = data.pioneer;
-        
-        if (data.streak) {
-            userData.streak = data.streak;
-            localStorage.setItem("smq_user", JSON.stringify(userData));
-            updateStreakDisplay();
-        }
-        
-        displayGameState(data);
-    } catch (err) { 
-        console.error(err);
-        alert("Error generating message");
-    }
-    
-    if (btn) btn.disabled = false;
-}
-
-// Fonction pour vérifier l'état au chargement (reconnexion)
-async function checkUserStateOnLoad() {
-    console.log("checkUserStateOnLoad called, username:", userData.username);
-    if (!userData.username) return;
-    
-    isLoadingState = true;
-    
-    try {
-        console.log("Checking game state without generating...");
-        const res = await fetch(`${BACKEND_BASE}/api/game/check-status`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: userData.username })
-        });
-        const data = await res.json();
-        console.log("Game state received:", data);
-        
-        // Si pas de statut, ne rien afficher (attendre que l'user clique sur Generate)
-        if (data.status === "NO_STATUS") {
-            console.log("No status yet, waiting for user to generate");
-            return;
-        }
-        
-        currentState.messageText = data.text;
-        currentState.messageId = data.messageId;
-        currentState.userStatus = data.userStatus;
-        currentState.pioneer = data.pioneer;
-        
-        console.log("User status:", data.userStatus);
-        console.log("Calling displayGameState...");
-        
-        // Afficher l'état approprié au chargement
-        displayGameState(data);
-        
-    } catch (err) {
-        console.error("Error checking state:", err);
-    } finally {
-        isLoadingState = false;
-    }
-}
-
-function displayGameState(data) {
-    console.log("displayGameState called with:", data);
-    
-    const gameContainer = document.getElementById("gameContainer");
-    const generationArea = document.getElementById("generationArea");
-    const postCard = document.getElementById("postCard");
-    const postText = document.getElementById("postText");
-    const submitArea = document.getElementById("submitArea");
-    const unlockArea = document.getElementById("unlockArea");
-    const gameFeedback = document.getElementById("gameFeedback");
-    const tweetUrlInput = document.getElementById("tweetUrl");
-    const generateBtn = document.getElementById("generateBtn");
-    
-    // Fonction helper pour créer/mettre à jour le message de statut
-    function showStatusMessage(html, popupMessage = null) {
-        console.log("showStatusMessage called");
-        // Masquer les zones de jeu
-        if (generationArea) generationArea.style.display = "none";
-        if (postCard) postCard.style.display = "none";
-        
-        // Pop-up si demandé ET si pas en chargement initial
-        if (popupMessage && !isLoadingState) {
-            alert(popupMessage);
-        } else if (popupMessage && isLoadingState) {
-            // À la reconnexion, afficher la pop-up
-            alert(popupMessage);
-        }
-        
-        // Créer ou mettre à jour le message de statut
-        let statusDiv = document.getElementById("statusMessage");
-        if (!statusDiv) {
-            statusDiv = document.createElement("div");
-            statusDiv.id = "statusMessage";
-            gameContainer.appendChild(statusDiv);
-        }
-        statusDiv.innerHTML = html;
-        statusDiv.style.display = "block";
-    }
-    
-    // Fonction helper pour afficher la zone de jeu normale
-    function showGameArea() {
-        console.log("showGameArea called");
-        const statusDiv = document.getElementById("statusMessage");
-        if (statusDiv) statusDiv.style.display = "none";
-        
-        if (generationArea) generationArea.style.display = "block";
-        if (postCard) {
-            postCard.style.display = "block";
-            postCard.classList.remove("hidden");
-        }
-    }
-    
-    // ========== SCÉNARIO 1: Déjà récupéré (Pioneer ou Follower) ==========
-    if (data.userStatus?.claimStatus === "pioneer" || data.userStatus?.claimStatus === "follower") {
-        console.log("Scenario: Fragment already claimed");
-        const statusHtml = `
-            <div style="background: #d1fae5; padding: 2rem; border-radius: 12px; text-align: center; max-width: 600px; margin: 2rem auto; border: 2px solid #10b981;">
-                <h3 style="color: #10b981; margin-bottom: 1rem; font-size: 1.5rem;">✅ Fragment Claimed!</h3>
-                <p style="color: #059669; font-size: 1.1rem; line-height: 1.6;">
-                    You have already claimed your fragment for today.<br>
-                    Come back tomorrow for a new challenge!
-                </p>
-            </div>
-        `;
-        
-        const popupMsg = "✅ You have already claimed your fragment for today. Come back tomorrow!";
-        showStatusMessage(statusHtml, popupMsg);
-        
-        if (generateBtn) {
-            generateBtn.textContent = "Truth Already Generated";
-            generateBtn.disabled = true;
-        }
-        return;
-    }
-    
-    // ========== SCÉNARIO 2A: Soumis sans succès - Pionnier pas encore révélé ==========
-    if (data.userStatus?.submitted && !data.pioneer) {
-        console.log("Scenario: Submitted but not found, no pioneer yet");
-        const statusHtml = `
-            <div style="background: #f1f5f9; padding: 2rem; border-radius: 12px; text-align: center; max-width: 600px; margin: 2rem auto; border: 2px solid #64748b;">
-                <h3 style="color: #64748b; margin-bottom: 1rem; font-size: 1.5rem;">⏳ Fragment Pending</h3>
-                <p style="color: #475569; font-size: 1.05rem; line-height: 1.8;">
-                    Today's fragment remains hidden.<br><br>
-                    Keep an eye on the <strong>MassArmy Telegram</strong> – another pioneer might reveal it soon!<br><br>
-                    If someone finds it, come back here to repost their message and unlock the fragment for yourself.
-                </p>
-            </div>
-        `;
-        
-        const popupMsg = "⏳ Today's fragment remains hidden. Keep an eye on the MassArmy Telegram – another pioneer might reveal it soon!";
-        showStatusMessage(statusHtml, popupMsg);
-        
-        if (generateBtn) {
-            generateBtn.textContent = "Truth Already Generated";
-            generateBtn.disabled = true;
-        }
-        return;
-    }
-    
-    // ========== SCÉNARIO 2B: Soumis sans succès - MAIS pionnier a révélé ==========
-    if (data.userStatus?.submitted && data.pioneer) {
-        console.log("Scenario: Submitted but pioneer found");
-        // Masquer la génération mais GARDER postCard pour unlockArea
-        if (generationArea) generationArea.style.display = "none";
-        const statusDiv = document.getElementById("statusMessage");
-        if (statusDiv) statusDiv.style.display = "none";
-        
-        if (postText) postText.textContent = data.text;
-        if (postCard) {
-            postCard.style.display = "block";
-            postCard.classList.remove("hidden");
-        }
-        if (submitArea) submitArea.style.display = "none";
-        
-        showRepostInterface(data.pioneer);
-        
-        if (generateBtn) {
-            generateBtn.textContent = "Truth Already Generated";
-            generateBtn.disabled = true;
-        }
-        
-        const popupMsg = `🎉 Today's fragment has been discovered by @${data.pioneer.username}! Repost their message to unlock it for yourself.`;
-        if (isLoadingState) {
-            alert(popupMsg);
-        } else if (!isLoadingState) {
-            alert(popupMsg);
-        }
-        return;
-    }
-    
-    // ========== SCÉNARIO 3: Première génération mais pionnier existe déjà ==========
-    if (data.pioneer && data.status === "ALREADY_GENERATED") {
-        console.log("Scenario: Already generated but pioneer exists");
-        showGameArea();
-        
-        if (postText) postText.textContent = data.text;
-        if (submitArea) submitArea.style.display = "block";
-        if (unlockArea) unlockArea.classList.add("hidden");
-        if (tweetUrlInput) tweetUrlInput.value = "";
-        
-        if (gameFeedback) {
-            gameFeedback.textContent = "Share this message on X, then paste your post link below.";
-            gameFeedback.style.color = "#3b82f6";
-        }
-        if (generateBtn) {
-            generateBtn.textContent = "Truth Already Generated";
-            generateBtn.disabled = true;
-        }
-        
-        if (!isLoadingState) {
-            alert(`Today's fragment was already discovered by @${data.pioneer.username}. Share your generated message first, then you'll be able to repost the winning message.`);
-        }
-        return;
-    }
-    
-    // ========== SCÉNARIO 4: Nouvelle génération normale ==========
-    console.log("Scenario: Normal generation");
-    showGameArea();
-    
-    if (postText) postText.textContent = data.text;
-    if (submitArea) submitArea.style.display = "block";
-    if (unlockArea) unlockArea.classList.add("hidden");
-    if (tweetUrlInput) tweetUrlInput.value = "";
-    
-    if (gameFeedback) {
-        gameFeedback.textContent = "Share this message on X, then paste your post link below to check for today's fragment.";
-        gameFeedback.style.color = "#3b82f6";
-    }
-    
-    if (generateBtn && data.status === "ALREADY_GENERATED") {
-        generateBtn.textContent = "Truth Already Generated";
-        generateBtn.disabled = true;
-    }
-}
-
-function showRepostInterface(pioneer) {
-    const unlockArea = document.getElementById("unlockArea");
-    const pioneerUser = document.getElementById("pioneerUser");
-    const pioneerLink = document.getElementById("pioneerLink");
-    const gameFeedback = document.getElementById("gameFeedback");
-    const submitArea = document.getElementById("submitArea");
-    const repostUrlInput = document.getElementById("repostUrl");
-    const shareBtn = document.getElementById("shareBtn");
-    
-    if (unlockArea) unlockArea.classList.remove("hidden");
-    if (pioneerUser) pioneerUser.textContent = pioneer.username;
-    if (pioneerLink) {
-        pioneerLink.href = pioneer.url;
-        pioneerLink.textContent = "View Pioneer's Post";
-    }
-    
-    // Masquer complètement la zone de soumission du premier post
-    if (submitArea) submitArea.style.display = "none";
-    
-    // Désactiver le bouton de partage
-    if (shareBtn) {
-        shareBtn.textContent = "✅ Post Shared";
-        shareBtn.disabled = true;
-        shareBtn.style.opacity = "0.6";
-    }
-    
-    // Réinitialiser le champ de saisie pour le repost
-    if (repostUrlInput) {
-        repostUrlInput.value = "";
-    }
-    
-    if (gameFeedback) {
-        gameFeedback.innerHTML = `
-            <div style="text-align: left; line-height: 1.8; margin-bottom: 1.5rem;">
-                <strong style="color: #f59e0b; font-size: 1.2rem;">🎉 Today's fragment has been discovered!</strong><br><br>
-                <strong>📋 How to unlock it for yourself:</strong><br>
-                1️⃣ Click "View Pioneer's Post" below<br>
-                2️⃣ Repost their message on X<br>
-                3️⃣ Go to YOUR profile and copy the link of YOUR repost<br>
-                4️⃣ Paste it in the field below and click "I have reposted"
-            </div>
-        `;
-        gameFeedback.style.color = "#f59e0b";
-        gameFeedback.style.background = "#fffbeb";
-        gameFeedback.style.padding = "1.5rem";
-        gameFeedback.style.borderRadius = "8px";
-        gameFeedback.style.border = "2px solid #fbbf24";
-    }
-}
-
-function shareOnX() {
-    if (!currentState.messageText) {
-        alert("Please generate a message first");
-        return;
-    }
-    
-    const tweetText = encodeURIComponent(currentState.messageText);
-    const shareUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
-    
-    const width = 550;
-    const height = 420;
-    const left = (screen.width - width) / 2;
-    const top = (screen.height - height) / 2;
-    
-    window.open(shareUrl, 'share_twitter', `width=${width},height=${height},left=${left},top=${top}`);
-}
-
-async function submitTweet() {
-    const tweetUrl = document.getElementById("tweetUrl")?.value.trim();
-    if (!tweetUrl) {
-        alert("Please paste your tweet link");
-        return;
-    }
-    
-    if (!tweetUrl.includes("x.com") && !tweetUrl.includes("twitter.com")) {
-        alert("Please enter a valid X/Twitter link");
-        return;
-    }
-    
-    const btn = document.getElementById("submitBtn");
-    if (btn) btn.disabled = true;
-    
-    try {
-        const res = await fetch(`${BACKEND_BASE}/api/game/submit`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                username: userData.username, 
-                tweetUrl,
-                isRepost: false
-            })
-        });
-        const data = await res.json();
-        handleSubmitResponse(data);
-    } catch (err) { 
-        console.error(err);
-        alert("Error during verification");
-    }
-    
-    if (btn) btn.disabled = false;
-}
-
-async function unlockFragment() {
-    const tweetUrl = document.getElementById("repostUrl")?.value.trim();
-    if (!tweetUrl) {
-        alert("Please paste your repost link");
-        return;
-    }
-    
-    const btn = document.getElementById("unlockBtn");
-    if (btn) btn.disabled = true;
-    
-    try {
-        const res = await fetch(`${BACKEND_BASE}/api/game/submit`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                username: userData.username, 
-                tweetUrl,
-                isRepost: true
-            })
-        });
-        const data = await res.json();
-        handleSubmitResponse(data);
-    } catch (err) { 
-        console.error(err);
-        alert("Error unlocking fragment");
-    }
-    
-    if (btn) btn.disabled = false;
-}
-
-function handleSubmitResponse(data) {
-    const feedback = document.getElementById("gameFeedback");
-    const submitArea = document.getElementById("submitArea");
-    const shareBtn = document.getElementById("shareBtn");
-    
-    if (data.status === "PIONEER") {
-        if (feedback) {
-            feedback.textContent = "BINGO! You revealed today's fragment. The community thanks you, Pioneer. A new character has been added to your table.";
-            feedback.style.color = "#10b981";
-            feedback.style.fontWeight = "bold";
-        }
-        alert("BINGO! You revealed today's fragment. The community thanks you, Pioneer.");
-        fetchUserCollection();
-        if (submitArea) submitArea.style.display = "none";
-        if (shareBtn) {
-            shareBtn.textContent = "You already shared your daily post";
-            shareBtn.disabled = true;
-        }
-    } 
-    else if (data.status === "FOLLOWER_SUCCESS") {
-        if (feedback) {
-            feedback.textContent = "Fragment unlocked! A new character has been added to your table.";
-            feedback.style.color = "#10b981";
-            feedback.style.fontWeight = "bold";
-        }
-        alert("Fragment unlocked! A new character has been added to your table.");
-        fetchUserCollection();
-        document.getElementById("unlockArea")?.classList.add("hidden");
-    }
-    else if (data.status === "PIONEER_EXISTS") {
-        showRepostInterface(data.pioneer);
-        alert(`Today's fragment was already discovered by @${data.pioneer.username}. Repost their message to unlock it.`);
-    }
-    else if (data.status === "NOT_FOUND") {
-        if (feedback) {
-            feedback.textContent = data.message;
-            feedback.style.color = "#64748b";
-        }
-        alert("Today's fragment remains hidden. Keep an eye on the MassArmy Telegram – another pioneer might reveal it soon! If someone finds it, come back here to repost their message and unlock the fragment for yourself.");
-        if (submitArea) submitArea.style.display = "none";
-        if (shareBtn) {
-            shareBtn.textContent = "You already shared your daily post";
-            shareBtn.disabled = true;
-        }
-    }
-    else if (data.status === "ALREADY_CLAIMED") {
-        if (feedback) {
-            feedback.textContent = data.message;
-            feedback.style.color = "#10b981";
-        }
-        alert(data.message);
-    }
-    else if (data.error) {
-        alert(data.error);
-    }
-}
-
-async function fetchUserCollection() {
-    if (!userData.username) return;
-    
-    try {
-        const res = await fetch(`${BACKEND_BASE}/api/user/collection/${userData.username}`);
-        const data = await res.json();
-        
-        if (data.collection) {
-            userData.clues = Array(53).fill(null);
-            data.collection.forEach(item => {
-                const [idx, char] = item.split(':');
-                userData.clues[parseInt(idx)] = char;
-            });
-            localStorage.setItem("smq_user", JSON.stringify(userData));
-            buildPeriodicTable();
-            updateCluesCount();
-        }
-    } catch (err) { 
-        console.error(err);
-    }
-}
-
-async function fetchUserStreak() {
-    if (!userData.username) return;
-    
-    try {
-        const res = await fetch(`${BACKEND_BASE}/api/user/streak/${userData.username}`);
-        const data = await res.json();
-        
-        if (data.streak) {
-            userData.streak = data.streak;
-            localStorage.setItem("smq_user", JSON.stringify(userData));
-            updateStreakDisplay();
-        }
-    } catch (err) {
-        console.error(err);
-    }
-}
-
-// --- UI ---
-
-function showConnectedUI() {
-    console.log("showConnectedUI called");
-    document.getElementById("authSection")?.classList.add("hidden");
-    document.getElementById("connectedInfo")?.classList.remove("hidden");
-    document.getElementById("gameContainer")?.classList.remove("hidden");
-    
-    const userDisplay = document.getElementById("username");
-    if (userDisplay) userDisplay.textContent = "@" + userData.username;
-    
-    const avatarDisplay = document.getElementById("userAvatar");
-    if (avatarDisplay && userData.avatar) {
-        avatarDisplay.src = userData.avatar;
-        avatarDisplay.onerror = () => {
-            avatarDisplay.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect fill='%23ddd' width='40' height='40'/%3E%3C/svg%3E";
-        };
-    }
-    
-    fetchUserStreak();
-    
-    console.log("About to call checkUserStateOnLoad");
-    // Vérifier l'état de l'utilisateur à la reconnexion
-    setTimeout(() => {
-        checkUserStateOnLoad();
-    }, 500); // Petit délai pour être sûr que le DOM est prêt
-}
-
-function buildPeriodicTable() {
-  const table = document.getElementById("periodicTable");
-  if (!table) return;
+app.post('/api/game/generate', async (req, res) => {
+  const { username } = req.body;
   
-  table.innerHTML = "";
-  for (let i = 0; i < 53; i++) {
-    const cell = document.createElement("div");
-    cell.className = "cell";
-    cell.textContent = userData.clues[i] || "?";
-    if (userData.clues[i]) cell.classList.add("unlocked");
-    table.appendChild(cell);
+  const streak = await updateUserStreak(username);
+  const userStatus = await getUserStatus(username);
+  const gameState = await getGameState();
+
+  if (userStatus?.messageId !== undefined) {
+    return res.json({ 
+      status: "ALREADY_GENERATED", 
+      messageId: userStatus.messageId,
+      text: MASSA_TRUTHS[userStatus.messageId],
+      userStatus,
+      pioneer: gameState.pioneer,
+      streak 
+    });
   }
-}
 
-function updateCluesCount() {
-    const count = userData.clues.filter(c => c !== null).length;
-    const countEl = document.getElementById("cluesCount");
-    if (countEl) countEl.textContent = count;
-}
+  const messageId = Math.floor(Math.random() * MASSA_TRUTHS.length);
+  
+  const newStatus = {
+    messageId,
+    submitted: false,
+    claimStatus: "pending"
+  };
+  
+  await setUserStatus(username, newStatus);
 
-function updateStreakDisplay() {
-    const streakLine = document.getElementById("streakLine");
-    const streakEl = document.getElementById("streak");
-    
-    if (streakLine && streakEl && userData.streak > 0) {
-        streakEl.textContent = userData.streak;
-        streakLine.classList.remove("hidden");
+  res.json({ 
+    status: "NEW_MESSAGE", 
+    messageId, 
+    text: MASSA_TRUTHS[messageId],
+    userStatus: newStatus,
+    pioneer: gameState.pioneer,
+    streak 
+  });
+});
+
+app.post('/api/game/check-status', async (req, res) => {
+  const { username } = req.body;
+  
+  const userStatus = await getUserStatus(username);
+  const gameState = await getGameState();
+  
+  if (!userStatus) {
+    return res.json({
+      status: "NO_STATUS",
+      userStatus: null,
+      pioneer: gameState.pioneer
+    });
+  }
+  
+  res.json({
+    status: userStatus.messageId !== undefined ? "HAS_STATUS" : "NO_STATUS",
+    messageId: userStatus.messageId,
+    text: userStatus.messageId !== undefined ? MASSA_TRUTHS[userStatus.messageId] : null,
+    userStatus,
+    pioneer: gameState.pioneer
+  });
+});
+
+app.post('/api/game/submit', async (req, res) => {
+  const { username, tweetUrl, isRepost } = req.body;
+  
+  if (!tweetUrl || !tweetUrl.includes('/status/')) {
+    return res.status(400).json({ error: "Invalid tweet URL" });
+  }
+
+  const urlMatch = tweetUrl.match(/(?:twitter\.com|x\.com)\/([^\/]+)\/status\/(\d+)/);
+  if (!urlMatch) {
+    return res.status(400).json({ error: "Invalid tweet URL format" });
+  }
+  
+  const urlUsername = urlMatch[1].toLowerCase();
+  const tweetId = urlMatch[2];
+
+  const userStatus = await getUserStatus(username);
+  const gameState = await getGameState();
+
+  if (userStatus?.claimStatus === "pioneer" || userStatus?.claimStatus === "follower") {
+    return res.json({ 
+      status: "ALREADY_CLAIMED",
+      message: "You have already claimed your fragment for today."
+    });
+  }
+
+  if (isRepost && gameState.pioneer) {
+    if (!userStatus?.firstTweetUrl) {
+      return res.status(400).json({ 
+        error: "You must first share your own generated message before claiming via repost."
+      });
     }
+    
+    if (tweetUrl === userStatus.firstTweetUrl) {
+      return res.status(400).json({ 
+        error: "Please submit your REPOST link of the pioneer's message, not your original post."
+      });
+    }
+    
+    if (urlUsername !== username.toLowerCase()) {
+      return res.status(400).json({ 
+        error: `This post belongs to @${urlUsername}. Please submit YOUR repost link from your @${username} account.`
+      });
+    }
+    
+    const clue = `${gameState.pioneer.index}:${gameState.pioneer.char}`;
+    await kv.sadd(`user:collection:${username}`, clue);
+    
+    await setUserStatus(username, {
+      ...userStatus,
+      claimStatus: "follower",
+      repostUrl: tweetUrl
+    });
+
+    return res.json({ 
+      status: "FOLLOWER_SUCCESS",
+      char: gameState.pioneer.char,
+      index: gameState.pioneer.index,
+      message: "Fragment unlocked! A new character has been added to your table."
+    });
+  }
+
+  if (!userStatus?.submitted) {
+    if (urlUsername !== username.toLowerCase()) {
+      return res.status(400).json({ 
+        error: `This post belongs to @${urlUsername}. Please submit YOUR post link from your @${username} account.`
+      });
+    }
+    
+    await setUserStatus(username, {
+      ...userStatus,
+      submitted: true,
+      firstTweetUrl: tweetUrl,
+      firstTweetId: tweetId
+    });
+
+    if (gameState.pioneer) {
+      return res.json({ 
+        status: "PIONEER_EXISTS",
+        pioneer: gameState.pioneer,
+        message: `Today's fragment was already discovered by @${gameState.pioneer.username}. Repost their message to unlock it.`
+      });
+    }
+
+    if (gameState.activeFragmentIndex !== null && 
+        parseInt(userStatus.messageId) === gameState.winningMessageId) {
+      
+      const char = PRIVATE_KEY_CHARS[gameState.activeFragmentIndex];
+      
+      gameState.pioneer = { 
+        url: tweetUrl, 
+        username, 
+        index: gameState.activeFragmentIndex, 
+        char 
+      };
+      
+      await kv.set('gameState', gameState);
+      await kv.sadd('global:revealed_indices', gameState.activeFragmentIndex.toString());
+      await kv.sadd(`user:collection:${username}`, `${gameState.activeFragmentIndex}:${char}`);
+      
+      await setUserStatus(username, {
+        ...userStatus,
+        submitted: true,
+        claimStatus: "pioneer"
+      });
+
+      sendTelegramAlert(
+        `<b>🚨 FRAGMENT REVEALED! 🚨</b>\n\n` +
+        `User @${username} discovered today's clue.\n` +
+        `Character: <code>${char}</code> at position ${gameState.activeFragmentIndex}\n\n` +
+        `<a href="${tweetUrl}">View the post on X</a>`
+      );
+
+      return res.json({ 
+        status: "PIONEER",
+        char,
+        index: gameState.activeFragmentIndex,
+        message: "BINGO! You revealed today's fragment. The community thanks you, Pioneer."
+      });
+    }
+
+    await setUserStatus(username, {
+      ...userStatus,
+      submitted: true,
+      claimStatus: "not_found"
+    });
+
+    return res.json({ 
+      status: "NOT_FOUND",
+      message: "Today's fragment remains hidden. Keep an eye on the MassArmy Telegram — another pioneer might reveal it soon!"
+    });
+  }
+
+  res.status(400).json({ error: "You have already submitted your post for today." });
+});
+
+app.get('/api/user/collection/:username', async (req, res) => {
+  const data = await kv.smembers(`user:collection:${req.params.username}`);
+  res.json({ collection: data || [] });
+});
+
+app.get('/api/game/status', async (req, res) => {
+  const gameState = await getGameState();
+  res.json({ 
+    pioneer: gameState.pioneer,
+    fragmentAvailable: gameState.activeFragmentIndex !== null
+  });
+});
+
+// --- ADMIN ROUTES ---
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "changeme123";
+
+function verifyAdmin(req, res, next) {
+  const authHeader = req.headers.authorization;
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  
+  const token = authHeader.substring(7);
+  
+  if (token !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  
+  next();
 }
 
-function setupEventListeners() {
-    document.getElementById("loginBtn")?.addEventListener("click", loginWithX);
-    
-    document.getElementById("logoutBtn")?.addEventListener("click", () => {
-        if (confirm("Are you sure you want to logout?")) {
-            localStorage.clear();
-            location.reload();
-        }
+app.post('/api/admin/login', async (req, res) => {
+  const { password } = req.body;
+  
+  if (password === ADMIN_PASSWORD) {
+    res.json({ 
+      success: true,
+      token: ADMIN_PASSWORD
     });
-    
-    document.querySelectorAll("#generateBtn").forEach(btn => {
-        btn.addEventListener("click", generateTruth);
+  } else {
+    res.status(401).json({ 
+      success: false,
+      error: 'Invalid password' 
     });
+  }
+});
+
+app.get('/api/admin/all-users', verifyAdmin, async (req, res) => {
+  try {
+    const today = getTodayUTC();
+    const allKeys = await kv.keys('user:collection:*');
+    const users = [];
     
-    document.getElementById("shareBtn")?.addEventListener("click", shareOnX);
-    document.getElementById("submitBtn")?.addEventListener("click", submitTweet);
-    document.getElementById("unlockBtn")?.addEventListener("click", unlockFragment);
+    for (const key of allKeys) {
+      const username = key.replace('user:collection:', '');
+      const collection = await kv.smembers(key);
+      const streak = await kv.get(`streak:${username}`);
+      const status = await kv.get(`status:${username}:${today}`);
+      
+      users.push({
+        username,
+        fragmentsCount: collection ? collection.length : 0,
+        collection: collection || [],
+        streak: streak?.streak || 0,
+        lastActive: streak?.lastVisit || null,
+        status: status
+      });
+    }
+    
+    users.sort((a, b) => b.fragmentsCount - a.fragmentsCount);
+    
+    res.json({ users, count: users.length });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- DEBUG ROUTES ---
+if (DEBUG_MODE) {
+  app.post('/api/debug/reset-user', async (req, res) => {
+    const { username } = req.body;
+    const today = getTodayUTC();
+    await kv.del(`status:${username}:${today}`);
+    res.json({ message: `User ${username} reset` });
+  });
+
+  app.post('/api/debug/reset-game', async (req, res) => {
+    await kv.del('gameState');
+    const gameState = await getGameState();
+    res.json({ message: 'Game reset', gameState });
+  });
+
+  app.post('/api/debug/clear-collection', async (req, res) => {
+    const { username } = req.body;
+    await kv.del(`user:collection:${username}`);
+    res.json({ message: 'Collection cleared' });
+  });
+
+  app.post('/api/debug/simulate-submitted', async (req, res) => {
+    const { username } = req.body;
+    await setUserStatus(username, {
+      messageId: 0,
+      submitted: true,
+      claimStatus: "not_found",
+      firstTweetUrl: "https://x.com/test/123"
+    });
+    res.json({ message: 'Submitted simulated' });
+  });
+
+  app.post('/api/debug/simulate-pioneer', async (req, res) => {
+    const { username } = req.body;
+    const gameState = await getGameState();
+    
+    if (gameState.activeFragmentIndex === null) {
+      return res.status(400).json({ error: "No active fragment" });
+    }
+    
+    const char = PRIVATE_KEY_CHARS[gameState.activeFragmentIndex];
+    gameState.pioneer = {
+      username: username || "TestPioneer",
+      url: "https://x.com/test/999",
+      index: gameState.activeFragmentIndex,
+      char
+    };
+    
+    await kv.set('gameState', gameState);
+    await kv.sadd('global:revealed_indices', gameState.activeFragmentIndex.toString());
+    
+    res.json({ message: 'Pioneer simulated', pioneer: gameState.pioneer });
+  });
+
+  app.get('/api/debug/user-status/:username', async (req, res) => {
+    const userStatus = await getUserStatus(req.params.username);
+    const collection = await kv.smembers(`user:collection:${req.params.username}`);
+    const streak = await kv.get(`streak:${req.params.username}`);
+    
+    res.json({ userStatus, collection, streak });
+  });
+
+  app.get('/api/debug/game-state', async (req, res) => {
+    const gameState = await getGameState();
+    const globalRevealed = await kv.smembers('global:revealed_indices');
+    
+    res.json({
+      gameState,
+      globalRevealed,
+      totalRevealed: globalRevealed ? globalRevealed.length : 0,
+      remaining: 53 - (globalRevealed ? globalRevealed.length : 0)
+    });
+  });
+
+  app.post('/api/debug/force-win', async (req, res) => {
+    const { username } = req.body;
+    const userStatus = await getUserStatus(username);
+    const gameState = await getGameState();
+    
+    if (!userStatus?.messageId) {
+      return res.status(400).json({ error: "Generate message first" });
+    }
+    
+    gameState.winningMessageId = userStatus.messageId;
+    await kv.set('gameState', gameState);
+    
+    res.json({ message: 'Forced win', messageId: userStatus.messageId });
+  });
 }
+
+app.get('/api/test-alive', (req, res) => {
+  res.json({ message: 'Backend alive', debugMode: DEBUG_MODE });
+});
+
+export default app;
