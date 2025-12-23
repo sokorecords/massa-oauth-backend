@@ -416,8 +416,45 @@ app.get('/api/game/status', async (req, res) => {
 // ADMIN ROUTES
 // ========================================
 
-// Route pour obtenir tous les utilisateurs et leurs progressions
-app.get('/api/admin/all-users', async (req, res) => {
+// Middleware de vérification admin
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "changeme123";
+
+function verifyAdmin(req, res, next) {
+  const authHeader = req.headers.authorization;
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized - No token provided' });
+  }
+  
+  const token = authHeader.substring(7); // Enlever "Bearer "
+  
+  if (token !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Unauthorized - Invalid token' });
+  }
+  
+  next();
+}
+
+// Route de login admin
+app.post('/api/admin/login', async (req, res) => {
+  const { password } = req.body;
+  
+  if (password === ADMIN_PASSWORD) {
+    res.json({ 
+      success: true,
+      token: ADMIN_PASSWORD,
+      message: 'Login successful'
+    });
+  } else {
+    res.status(401).json({ 
+      success: false,
+      error: 'Invalid password' 
+    });
+  }
+});
+
+// Route pour obtenir tous les utilisateurs et leurs progressions (PROTÉGÉE)
+app.get('/api/admin/all-users', verifyAdmin, async (req, res) => {
   try {
     const today = getTodayUTC();
     
