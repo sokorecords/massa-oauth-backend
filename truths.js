@@ -17,7 +17,9 @@ Some messages carry fragments. Play the game and uncover hidden rewards at sprea
   `Post-quantum cryptography is integrated directly into Massa's protocol. Security is anticipated rather than added as a later upgrade.
 @massachain $MAS
 Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
-  `Massa uses ledger pruning to keep node storage requirements accessible over time. Decentralization remains viable for everyday participants.`,
+  `Massa uses ledger pruning to keep node storage requirements accessible over time. Decentralization remains viable for everyday participants.
+@massachain $MAS
+Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
   `Parallel execution allows Massa to process transactions simultaneously without creating forks. This brings real concurrency to on-chain applications.
 @massachain $MAS
 Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
@@ -1123,5 +1125,6 @@ Descubre fragmentos ocultos en los mensajes — ¡únete al juego Spread Massa Q
 @massachain $MAS
 Descubre fragmentos ocultos en los mensajes — ¡únete al juego Spread Massa Quest y gana premios! Visita spreadmassaquest.deweb.half-red.net`,
 ];
+
 
 
