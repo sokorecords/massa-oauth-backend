@@ -451,139 +451,139 @@ Some messages carry fragments. Play the game and uncover hidden rewards at sprea
 Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
   `Massa supprime le besoin d’IPFS ou de passerelles. Les sites ne sont pas hébergés : ils existent directement on-chain, de manière permanente et immuable.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa permet aux applications full-stack de vivre entièrement on-chain. Frontend et backend restent accessibles sans dépendre de services externes.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Les contrats autonomes réduisent les points de défaillance. Quand la logique s’exécute on-chain, les pannes liées aux serveurs disparaissent.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa est conçue pour que la décentralisation renforce le réseau au lieu de le ralentir. Plus il y a de nœuds, plus le système est robuste.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Sur Massa, les contrats intelligents interagissent entre threads avec des résultats déterministes. La complexité ne compromet pas la fiabilité.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Le DeWeb permet aux sites web de devenir des entités autonomes. Leur existence ne dépend plus d’entreprises ou de serveurs.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `La censure s’exerce souvent via l’infrastructure. Massa neutralise ces mécanismes directement au niveau du protocole.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Si une plateforme peut supprimer ton contenu, la propriété est une illusion. Massa supprime définitivement cette possibilité.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa redistribue le pouvoir en supprimant les intermédiaires techniques. L’infrastructure devient réellement collective.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Chaque serveur est un point de contrôle potentiel. Massa supprime les serveurs pour supprimer le contrôle lui-même.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `La liberté numérique commence avec une infrastructure incensurable. Massa en pose les fondations.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Quand le contenu vit on-chain, la censure devient impraticable. Massa transforme la publication en acte permanent.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa empêche la réécriture silencieuse de l’histoire numérique. Une fois publié, l’information devient mémoire collective.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Le Web moderne est fragile car il dépend de systèmes centralisés. Massa remplace cette fragilité par une résilience structurelle.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa transforme la blockchain en infrastructure durable. La permanence devient une propriété native.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `L’internet du futur reposera sur des protocoles, pas sur des plateformes. Massa place les fonctions clés dans le consensus.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Les applications sur Massa n’ont pas besoin d’être maintenues pour exister. Elles fonctionnent aussi longtemps que le réseau vit.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa fait passer le web de services hébergés à des systèmes autonomes. La dépendance disparaît.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `La souveraineté numérique ne se promet pas, elle se code. Massa l’inscrit dans son architecture.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Le DeWeb transforme les sites temporaires en archives durables. Massa rend cela possible.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa permet à l’information de survivre aux entreprises, aux crises et aux politiques.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Une application autonome est plus qu’un logiciel. Sur Massa, elle devient une infrastructure.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa construit un web qui ne peut pas être éteint. La disponibilité n’est plus négociable.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Le DeWeb repose sur l’autonomie et la durabilité. Massa concrétise cette vision aujourd’hui.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa garantit que le contenu ne disparaît pas avec un changement de politique ou de conditions d’utilisation.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `L’infrastructure détermine la liberté. Massa redéfinit l’infrastructure.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa permet à l’internet d’exister sans autorisation. Le code remplace la confiance.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Le DeWeb est un internet qui ne peut pas être acheté. Massa en est le socle.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa transforme la publication numérique en engagement irréversible.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa offre un espace public numérique que personne ne peut fermer.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Le futur du web repose sur l’existence, pas sur l’hébergement. Massa montre la voie.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa ancre la liberté numérique dans le consensus plutôt que dans la loi.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Les applications Massa survivent à leurs créateurs. La permanence devient normale.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa transforme la blockchain en mémoire collective.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Le DeWeb protège l’information contre l’oubli forcé. Massa le rend réel.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa supprime les dépendances critiques du web moderne.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa rend possible un web neutre, autonome et durable.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa fait du web un bien commun plutôt qu’un produit.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa garantit que les idées ne peuvent pas être effacées.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa construit une infrastructure qui traverse les générations.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa redonne au web sa fonction première : durer.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa est un internet qui ne peut pas être éteint.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa transforme l’autonomie en standard.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa fait de la permanence une règle, pas une exception.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
   `Massa bâtit un web souverain, stable et impossible à arrêter.
 @massachain $MAS
-Découvrez les fragments cachés dans les messages — rejoignez le jeu Spread Massa Quest et gagnez des prix ! Rendez-vous sur spreadmassaquest.deweb.half-red.net`,
+Découvrez les fragments cachés dans les messages — rejoignez le jeu spreadmassaquest.deweb.half-red.net et gagnez des prix !`,
    `Massa 消除了对 IPFS 或网关的依赖。网站不再被托管，而是直接以不可变、永久的形式存在于链上。
 @massachain $MAS
 发现隐藏在消息中的碎片 — 加入 spreadmassaquest.deweb.half-red.net`,
