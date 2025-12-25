@@ -286,21 +286,21 @@ app.post('/api/game/submit', async (req, res) => {
     // Vérifier que l'utilisateur a déjà soumis son propre tweet
     if (!userStatus?.firstTweetUrl) {
       return res.status(400).json({ 
-        error: "You must first share your own generated message before claiming via repost."
+        error: "You must first share your own generated message before claiming via quoting."
       });
     }
     
     // Vérifier que ce n'est pas son propre tweet original
     if (tweetUrl === userStatus.firstTweetUrl) {
       return res.status(400).json({ 
-        error: "Please submit your REPOST link of the pioneer's message, not your original post."
+        error: "Please submit your Quote link of the pioneer's message, not your original post."
       });
     }
     
     // Vérifier que le repost appartient bien à l'utilisateur
     if (urlUsername !== username.toLowerCase()) {
       return res.status(400).json({ 
-        error: `This post belongs to @${urlUsername}. Please submit YOUR repost link from your @${username} account.`
+        error: `This post belongs to @${urlUsername}. Please submit YOUR quote link from your @${username} account.`
       });
     }
     
@@ -341,7 +341,7 @@ app.post('/api/game/submit', async (req, res) => {
       return res.json({ 
         status: "PIONEER_EXISTS",
         pioneer: gameState.pioneer,
-        message: `Today's fragment was already discovered by @${gameState.pioneer.username}. Repost their message to unlock it.`
+        message: `Today's fragment was already discovered by @${gameState.pioneer.username}. Quote their message to unlock it.`
       });
     }
 
@@ -390,7 +390,7 @@ app.post('/api/game/submit', async (req, res) => {
 
     return res.json({ 
       status: "NOT_FOUND",
-      message: "Today's fragment remains hidden. Keep an eye on the MassArmy Telegram — another pioneer might reveal it soon! If someone finds it, come back here to repost their message and unlock the fragment for yourself."
+      message: "Today's fragment remains hidden. Keep an eye on the MassArmy Telegram — another pioneer might reveal it soon! If someone finds it, come back here to quote their message and unlock the fragment for yourself."
     });
   }
 
@@ -663,3 +663,4 @@ app.get('/api/test-alive', (req, res) => {
 });
 
 export default app;
+
