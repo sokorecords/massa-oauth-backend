@@ -660,7 +660,27 @@ app.get('/api/test-alive', (req, res) => {
     debugMode: DEBUG_MODE,
     env: process.env.DEBUG_MODE 
   });
+}); 
+
+// ============================================
+// ⚠️ ROUTE DE RESET TEMPORAIRE - À SUPPRIMER APRÈS TEST
+// ============================================
+app.post('/api/admin/reset-all', verifyAdmin, async (req, res) => {
+  try {
+    const allKeys = await kv.keys('*');
+    
+    for (const key of allKeys) {
+      await kv.del(key);
+    }
+    
+    res.json({ 
+      message: 'Database completely reset',
+      keysDeleted: allKeys.length
+    });
+  } catch (err) {
+    console.error('Reset error:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 export default app;
-
