@@ -168,6 +168,24 @@ app.post('/api/user/profile', async (req, res) => {
       headers: { "Authorization": `Bearer ${access_token}` }
     });
     const data = await response.json();
+    
+    // Créer une collection vide pour tracking si elle n'existe pas
+    if (data.data?.username) {
+      const username = data.data.username;
+      const collectionKey = `user:collection:${username}`;
+      
+      // Vérifier si la collection existe déjà
+      const collectionExists = await kv.exists(collectionKey);
+      
+      if (!collectionExists) {
+        // Créer une collection vide (sans fragment)
+        await kv.sadd(collectionKey, '__init__');
+        await kv.srem(collectionKey, '__init__');
+        
+        console.log(`[Profile] Collection initialized for ${username}`);
+      }
+    }
+    
     res.json(data);
   } catch (err) { 
     res.status(500).json({ error: err.message }); 
@@ -716,5 +734,6 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 
 
 export default app;
+
 
 
