@@ -509,14 +509,17 @@ app.get('/api/admin/all-users', verifyAdmin, async (req, res) => {
       const streak = await kv.get(`streak:${username}`);
       const status = await kv.get(`status:${username}:${today}`);
       
-     users.push({
-  username,
-  fragmentsCount: collection ? collection.length : 0,
-  collection: collection || [],
-  streak: streak?.streak || 0,
-  lastActive: streak?.lastVisit || null,
-  status: status
-});
+      // Exclure le marqueur "_user_registered" du comptage
+      const realFragments = collection ? collection.filter(item => item !== '_user_registered') : [];
+      
+      users.push({
+        username,
+        fragmentsCount: realFragments.length,
+        collection: realFragments,
+        streak: streak?.streak || 0,
+        lastActive: streak?.lastVisit || null,
+        status: status
+      });
     }
     
     // Trier par nombre de fragments (décroissant)
@@ -761,6 +764,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 
 
 export default app;
+
 
 
 
