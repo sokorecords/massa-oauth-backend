@@ -682,5 +682,39 @@ app.post('/api/admin/reset-all', verifyAdmin, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// ============================================
+// ROUTE ADMIN STATS (fonctionne sans DEBUG_MODE)
+// ============================================
+app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
+  try {
+    const allKeys = await kv.keys('user:*');
+    const totalUsers = allKeys.length;
+    
+    // Compter les fragments révélés
+    let totalFragments = 0;
+    for (const key of allKeys) {
+      const user = await kv.hgetall(key);
+      if (user && user.fragments_found) {
+        totalFragments += parseInt(user.fragments_found) || 0;
+      }
+    }
+    
+    // Chercher le pioneer d'aujourd'hui
+    const today = new Date().toISOString().split('T')[0];
+    const pioneerKey = `pioneer:${today}`;
+    const pioneerData = await kv.get(pioneerKey);
+    const pioneer = pioneerData ? JSON.parse(pioneerData) : null;
+    
+    res.json({
+      totalUsers,
+      totalFragments,
+      todayPioneer: pioneer
+    });
+  } catch (err) {
+    console.error('Admin stats error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 export default app;
+
