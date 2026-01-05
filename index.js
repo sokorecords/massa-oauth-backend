@@ -806,10 +806,22 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
     const gameState = await kv.get('gameState');
     const pioneer = gameState?.pioneer || null;
     
+    // Infos sur la difficulté actuelle
+    const messagePoolSize = gameState?.messagePoolSize || 300;
+    const activePlayersYesterday = gameState?.activePlayersYesterday || 0;
+    const probabilityPerPlayer = ((1 / messagePoolSize) * 100).toFixed(2);
+    const estimatedProbWith15Players = ((1 - Math.pow(1 - 1/messagePoolSize, 15)) * 100).toFixed(2);
+    
     res.json({
       totalUsers,
       totalFragments,
-      todayPioneer: pioneer
+      todayPioneer: pioneer,
+      difficulty: {
+        messagePoolSize,
+        activePlayersYesterday,
+        probabilityPerPlayer: `${probabilityPerPlayer}%`,
+        estimatedProbWith15Players: `${estimatedProbWith15Players}%`
+      }
     });
   } catch (err) {
     console.error('Admin stats error:', err);
@@ -817,8 +829,8 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
   }
 });
 
-
 export default app;
+
 
 
 
