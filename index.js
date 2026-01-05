@@ -176,29 +176,28 @@ app.post('/api/user/profile', async (req, res) => {
     const data = await response.json();
     console.log('[Profile] User data received:', data.data?.username);
     
-    // Créer collection
+    // Créer collection avec un marqueur permanent
     if (data.data?.username) {
       const username = data.data.username;
       const collectionKey = `user:collection:${username}`;
       
-      console.log(`[Profile] Creating collection: ${collectionKey}`);
+      console.log(`[Profile] Checking/creating collection: ${collectionKey}`);
       
       try {
-        // Créer la collection SANS vérifier si elle existe
-        await kv.sadd(collectionKey, '__init__');
-        console.log(`[Profile] Step 1: Added __init__`);
-        
-        await kv.srem(collectionKey, '__init__');
-        console.log(`[Profile] Step 2: Removed __init__`);
-        
-        // Vérifier immédiatement
+        // Vérifier si existe déjà
         const exists = await kv.exists(collectionKey);
-        console.log(`[Profile] Collection exists? ${exists}`);
+        console.log(`[Profile] Collection exists before: ${exists}`);
         
         if (exists === 0) {
-          console.log(`[Profile] WARNING: Collection NOT created!`);
+          // Créer avec un marqueur permanent "_user_registered"
+          await kv.sadd(collectionKey, '_user_registered');
+          console.log(`[Profile] Collection created with marker`);
+          
+          // Vérifier
+          const checkAfter = await kv.exists(collectionKey);
+          console.log(`[Profile] Collection exists after: ${checkAfter}`);
         } else {
-          console.log(`[Profile] SUCCESS: Collection created!`);
+          console.log(`[Profile] Collection already exists`);
         }
         
       } catch (kvError) {
@@ -758,6 +757,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 
 
 export default app;
+
 
 
 
