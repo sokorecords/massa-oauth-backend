@@ -682,28 +682,26 @@ app.post('/api/admin/reset-all', verifyAdmin, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 // ============================================
 // ROUTE ADMIN STATS (fonctionne sans DEBUG_MODE)
 // ============================================
 app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
   try {
-    const allKeys = await kv.keys('user:*');
-    const totalUsers = allKeys.length;
+    // Récupérer toutes les collections d'utilisateurs
+    const collectionKeys = await kv.keys('user:collection:*');
+    const totalUsers = collectionKeys.length;
     
-    // Compter les fragments révélés
+    // Compter les fragments révélés (total de toutes les collections)
     let totalFragments = 0;
-    for (const key of allKeys) {
-      const user = await kv.hgetall(key);
-      if (user && user.fragments_found) {
-        totalFragments += parseInt(user.fragments_found) || 0;
-      }
+    for (const key of collectionKeys) {
+      const collection = await kv.smembers(key);
+      totalFragments += (collection ? collection.length : 0);
     }
     
-    // Chercher le pioneer d'aujourd'hui
-    const today = new Date().toISOString().split('T')[0];
-    const pioneerKey = `pioneer:${today}`;
-    const pioneerData = await kv.get(pioneerKey);
-    const pioneer = pioneerData ? JSON.parse(pioneerData) : null;
+    // Chercher le pioneer d'aujourd'hui dans le gameState
+    const gameState = await kv.get('gameState');
+    const pioneer = gameState?.pioneer || null;
     
     res.json({
       totalUsers,
@@ -716,5 +714,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
   }
 });
 
+
 export default app;
+
 
