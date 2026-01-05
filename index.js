@@ -111,10 +111,65 @@ async function getGameState() {
         : null;
     }
 
+    // ============================================
+    // PROBABILITÉ DYNAMIQUE BASÉE SUR LE NOMBRE DE JOUEURS
+    // ============================================
+    
+    // Compter le nombre de joueurs actifs hier
+    const yesterday = getYesterdayUTC();
+    const yesterdayKeys = await kv.keys(`status:*:${yesterday}`);
+    const activePlayersYesterday = yesterdayKeys.length;
+    
+    console.log(`[GameState] Active players yesterday: ${activePlayersYesterday}`);
+    
+    // Calculer le pool de messages en fonction du nombre de joueurs
+    let messagePoolSize;
+    
+    if (activePlayersYesterday === 0) {
+      // Premier jour ou aucun joueur hier → Pool très réduit
+      messagePoolSize = 30;
+    } else if (activePlayersYesterday <= 5) {
+      // Très peu de joueurs → Pool très réduit
+      messagePoolSize = 50;
+    } else if (activePlayersYesterday <= 10) {
+      // Peu de joueurs → Pool réduit
+      messagePoolSize = 75;
+    } else if (activePlayersYesterday <= 20) {
+      // Croissance progressive
+      messagePoolSize = 125;
+    } else if (activePlayersYesterday <= 30) {
+      // Nombre correct
+      messagePoolSize = 150;
+    } else if (activePlayersYesterday <= 50) {
+      // Bon nombre de joueurs
+      messagePoolSize = 170;
+    } else if (activePlayersYesterday <= 100) {
+      // Beaucoup de joueurs
+      messagePoolSize = 200;
+    } else if (activePlayersYesterday <= 200) {
+      // Très nombreux
+      messagePoolSize = 250;
+    } else {
+      // Masse critique atteinte
+      messagePoolSize = 300;
+    }
+    
+    console.log(`[GameState] Message pool size: ${messagePoolSize} (from ${MASSA_TRUTHS.length} total messages)`);
+    
+    // Tirer le message gagnant dans le pool réduit
+    const winningMessageId = Math.floor(Math.random() * messagePoolSize);
+    
+    const probabilityPerPlayer = (1 / messagePoolSize * 100).toFixed(2);
+    console.log(`[GameState] Winning message ID: ${winningMessageId} (probability per player: ${probabilityPerPlayer}%)`);
+    
+    // ============================================
+
     state = {
       lastUpdate: today,
       activeFragmentIndex: activeFragment,
-      winningMessageId: Math.floor(Math.random() * MASSA_TRUTHS.length),
+      winningMessageId: winningMessageId,
+      messagePoolSize: messagePoolSize, // Stocker pour debug/admin
+      activePlayersYesterday: activePlayersYesterday, // Stocker pour debug
       pioneer: null
     };
     await kv.set('gameState', state);
@@ -764,6 +819,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 
 
 export default app;
+
 
 
 
