@@ -509,14 +509,14 @@ app.get('/api/admin/all-users', verifyAdmin, async (req, res) => {
       const streak = await kv.get(`streak:${username}`);
       const status = await kv.get(`status:${username}:${today}`);
       
-      users.push({
-        username,
-        fragmentsCount: collection ? collection.length : 0,
-        collection: collection || [],
-        streak: streak?.streak || 0,
-        lastActive: streak?.lastVisit || null,
-        status: status
-      });
+     users.push({
+  username,
+  fragmentsCount: collection ? collection.length : 0,
+  collection: collection || [],
+  streak: streak?.streak || 0,
+  lastActive: streak?.lastVisit || null,
+  status: status
+});
     }
     
     // Trier par nombre de fragments (décroissant)
@@ -733,11 +733,15 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
     const collectionKeys = await kv.keys('user:collection:*');
     const totalUsers = collectionKeys.length;
     
-    // Compter les fragments révélés (total de toutes les collections)
+    // Compter les fragments révélés (en excluant le marqueur)
     let totalFragments = 0;
     for (const key of collectionKeys) {
       const collection = await kv.smembers(key);
-      totalFragments += (collection ? collection.length : 0);
+      if (collection) {
+        // Exclure le marqueur "_user_registered" du comptage
+        const realFragments = collection.filter(item => item !== '_user_registered');
+        totalFragments += realFragments.length;
+      }
     }
     
     // Chercher le pioneer d'aujourd'hui dans le gameState
@@ -757,6 +761,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 
 
 export default app;
+
 
 
 
