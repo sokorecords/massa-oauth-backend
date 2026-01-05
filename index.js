@@ -158,36 +158,60 @@ app.post('/api/oauth/token', async (req, res) => {
 });
 
 app.post('/api/user/profile', async (req, res) => {
+  console.log('[Profile] Route called');
+  
   try {
     const { access_token } = req.body;
+    console.log('[Profile] Access token received:', !!access_token);
+    
     if (!access_token) {
+      console.log('[Profile] ERROR: No access token');
       return res.status(400).json({ error: "Missing access_token" });
     }
     
+    console.log('[Profile] Fetching user data from X API...');
     const response = await fetch("https://api.x.com/2/users/me?user.fields=profile_image_url", {
       headers: { "Authorization": `Bearer ${access_token}` }
     });
     const data = await response.json();
+    console.log('[Profile] User data received:', data.data?.username);
     
-    // Créer une collection vide pour tracking si elle n'existe pas
+    // Créer collection
     if (data.data?.username) {
       const username = data.data.username;
       const collectionKey = `user:collection:${username}`;
       
-      // Vérifier si la collection existe déjà
-      const collectionExists = await kv.exists(collectionKey);
+      console.log(`[Profile] Creating collection: ${collectionKey}`);
       
-      if (!collectionExists) {
-        // Créer une collection vide (sans fragment)
+      try {
+        // Créer la collection SANS vérifier si elle existe
         await kv.sadd(collectionKey, '__init__');
-        await kv.srem(collectionKey, '__init__');
+        console.log(`[Profile] Step 1: Added __init__`);
         
-        console.log(`[Profile] Collection initialized for ${username}`);
+        await kv.srem(collectionKey, '__init__');
+        console.log(`[Profile] Step 2: Removed __init__`);
+        
+        // Vérifier immédiatement
+        const exists = await kv.exists(collectionKey);
+        console.log(`[Profile] Collection exists? ${exists}`);
+        
+        if (exists === 0) {
+          console.log(`[Profile] WARNING: Collection NOT created!`);
+        } else {
+          console.log(`[Profile] SUCCESS: Collection created!`);
+        }
+        
+      } catch (kvError) {
+        console.error(`[Profile] KV Error:`, kvError);
       }
+      
+    } else {
+      console.log('[Profile] No username in data');
     }
     
     res.json(data);
   } catch (err) { 
+    console.error('[Profile] Main error:', err);
     res.status(500).json({ error: err.message }); 
   }
 });
@@ -734,6 +758,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 
 
 export default app;
+
 
 
 
