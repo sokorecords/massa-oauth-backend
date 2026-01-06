@@ -782,6 +782,35 @@ app.post('/api/admin/reset-all', verifyAdmin, async (req, res) => {
   }
 });
 
+// Route admin pour voir les détails d'un utilisateur
+app.get('/api/admin/user-details/:username', verifyAdmin, async (req, res) => {
+  try {
+    const { username } = req.params;
+    const today = getTodayUTC();
+    
+    // Collection
+    const collection = await kv.smembers(`user:collection:${username}`);
+    const realFragments = collection ? collection.filter(item => item !== '_user_registered') : [];
+    
+    // Streak
+    const streak = await kv.get(`streak:${username}`);
+    
+    // Status aujourd'hui
+    const status = await kv.get(`status:${username}:${today}`);
+    
+    res.json({
+      username,
+      collection: realFragments,
+      fragmentsCount: realFragments.length,
+      streak: streak || { streak: 0, lastVisit: null },
+      todayStatus: status || null
+    });
+    
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ============================================
 // ROUTE ADMIN STATS (fonctionne sans DEBUG_MODE)
 // ============================================
@@ -830,6 +859,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
