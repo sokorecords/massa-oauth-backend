@@ -94,6 +94,25 @@ async function getGameState() {
     const remainingIndices = PRIVATE_KEY_CHARS.map((_, i) => i)
                                .filter(i => !globalRevealed.includes(i.toString()));
 
+    // ============================================
+    // SAUVEGARDER LE PIONEER D'HIER DANS L'HISTORIQUE
+    // ============================================
+    let pioneerHistory = state?.pioneerHistory || [];
+    
+    if (state?.pioneer) {
+      // Ajouter le pioneer d'hier à l'historique
+      pioneerHistory.push({
+        date: state.lastUpdate,
+        username: state.pioneer.username,
+        url: state.pioneer.url,
+        index: state.pioneer.index,
+        char: state.pioneer.char
+      });
+      
+      console.log(`[GameState] Added pioneer to history: @${state.pioneer.username} - Fragment #${state.pioneer.index}`);
+    }
+    // ============================================
+
     // CARRY-OVER: Garder le fragment actif si non trouvé
     let activeFragment = null;
     if (state?.pioneer) {
@@ -126,39 +145,28 @@ async function getGameState() {
     let messagePoolSize;
     
     if (activePlayersYesterday === 0) {
-      // Premier jour ou aucun joueur hier → Pool très réduit
       messagePoolSize = 30;
     } else if (activePlayersYesterday <= 5) {
-      // Très peu de joueurs → Pool très réduit
       messagePoolSize = 50;
     } else if (activePlayersYesterday <= 10) {
-      // Peu de joueurs → Pool réduit
       messagePoolSize = 75;
     } else if (activePlayersYesterday <= 20) {
-      // Croissance progressive
       messagePoolSize = 125;
     } else if (activePlayersYesterday <= 30) {
-      // Nombre correct
       messagePoolSize = 150;
     } else if (activePlayersYesterday <= 50) {
-      // Bon nombre de joueurs
       messagePoolSize = 170;
     } else if (activePlayersYesterday <= 100) {
-      // Beaucoup de joueurs
       messagePoolSize = 200;
     } else if (activePlayersYesterday <= 200) {
-      // Très nombreux
       messagePoolSize = 250;
     } else {
-      // Masse critique atteinte
       messagePoolSize = 300;
     }
     
     console.log(`[GameState] Message pool size: ${messagePoolSize} (from ${MASSA_TRUTHS.length} total messages)`);
     
-    // Tirer le message gagnant dans le pool réduit
     const winningMessageId = Math.floor(Math.random() * messagePoolSize);
-    
     const probabilityPerPlayer = (1 / messagePoolSize * 100).toFixed(2);
     console.log(`[GameState] Winning message ID: ${winningMessageId} (probability per player: ${probabilityPerPlayer}%)`);
     
@@ -168,10 +176,12 @@ async function getGameState() {
       lastUpdate: today,
       activeFragmentIndex: activeFragment,
       winningMessageId: winningMessageId,
-      messagePoolSize: messagePoolSize, // Stocker pour debug/admin
-      activePlayersYesterday: activePlayersYesterday, // Stocker pour debug
-      pioneer: null
+      messagePoolSize: messagePoolSize,
+      activePlayersYesterday: activePlayersYesterday,
+      pioneer: null, // Reset pour aujourd'hui
+      pioneerHistory: pioneerHistory // Conserver l'historique
     };
+    
     await kv.set('gameState', state);
   }
   return state;
@@ -493,13 +503,114 @@ app.post('/api/game/submit', async (req, res) => {
   res.status(400).json({ error: "You have already submitted your post for today." });
 });
 
-// 3. Get user collection
+// 3. Route pour obtenir les fragments manqués
+app.get('/api/game/missed-clues/:username', async (req, res) => {
+  try {
+    const { username } = req.params;
+    
+    // Collection de l'utilisateur
+    const userCollection = await kv.smembers(`user:collection:${username}`);
+    const userFragments = (userCollection || [])
+      .filter(item => item !== '_user_registered')
+      .map(item => {
+        const parts = item.split(':');
+        return parseInt(parts[0]);
+      });
+    
+    // Historique des pionniers
+    const gameState = await kv.get('gameState');
+    const pioneerHistory = gameState?.pioneerHistory || [];
+    
+    // Filtrer les fragments que l'utilisateur n'a PAS
+    const missedClues = pioneerHistory.filter(pioneer => 
+      !userFragments.includes(pioneer.index)
+    );
+    
+    res.json({
+      missedClues,
+      totalMissed: missedClues.length,
+      userFragments
+    });
+    
+  } catch (err) {
+    console.error('Error fetching missed clues:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 4. Route pour débloquer un fragment manqué via quote
+app.post('/api/game/unlock-missed', async (req, res) => {
+  try {
+    const { username, quoteUrl, fragmentIndex } = req.body;
+    
+    if (!quoteUrl || !quoteUrl.includes('/status/')) {
+      return res.status(400).json({ error: 'Invalid quote URL' });
+    }
+    
+    // Vérifier que le fragment existe dans l'historique
+    const gameState = await kv.get('gameState');
+    const pioneer = gameState.pioneerHistory?.find(p => p.index === fragmentIndex);
+    
+    if (!pioneer) {
+      return res.status(400).json({ error: 'This fragment was never revealed by a pioneer' });
+    }
+    
+    // Vérifier que l'utilisateur n'a pas déjà ce fragment
+    const userCollection = await kv.smembers(`user:collection:${username}`);
+    const hasFragment = userCollection?.some(item => item.startsWith(`${fragmentIndex}:`));
+    
+    if (hasFragment) {
+      return res.status(400).json({ error: 'You already have this fragment' });
+    }
+    
+    // Extraire l'username du quoteUrl pour vérifier que c'est bien l'utilisateur
+    const urlMatch = quoteUrl.match(/(?:twitter\.com|x\.com)\/([^\/]+)\/status\/(\d+)/);
+    if (!urlMatch) {
+      return res.status(400).json({ error: 'Invalid quote URL format' });
+    }
+    
+    const urlUsername = urlMatch[1].toLowerCase();
+    if (urlUsername !== username.toLowerCase()) {
+      return res.status(400).json({ 
+        error: `This quote belongs to @${urlUsername}. Please submit YOUR quote from @${username}` 
+      });
+    }
+    
+    // Débloquer le fragment
+    await kv.sadd(`user:collection:${username}`, `${pioneer.index}:${pioneer.char}`);
+    
+    console.log(`[UnlockMissed] @${username} unlocked fragment #${pioneer.index} via quote`);
+    
+    // Alerte Telegram optionnelle
+    sendTelegramAlert(
+      `<b>📦 MISSED CLUE UNLOCKED</b>\n\n` +
+      `User @${username} unlocked fragment #${pioneer.index} ("${pioneer.char}")\n` +
+      `Original pioneer: @${pioneer.username}\n` +
+      `Quote: <a href="${quoteUrl}">View quote</a>`
+    );
+    
+    res.json({
+      status: 'UNLOCKED',
+      fragment: {
+        index: pioneer.index,
+        char: pioneer.char
+      },
+      message: `Fragment #${pioneer.index} unlocked! Character "${pioneer.char}" added to your collection.`
+    });
+    
+  } catch (err) {
+    console.error('Error unlocking missed clue:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 5. Get user collection
 app.get('/api/user/collection/:username', async (req, res) => {
   const data = await kv.smembers(`user:collection:${req.params.username}`);
   res.json({ collection: data || [] });
 });
 
-// 4. Get game status
+// 6. Get game status
 app.get('/api/game/status', async (req, res) => {
   const gameState = await getGameState();
   res.json({ 
@@ -859,6 +970,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
