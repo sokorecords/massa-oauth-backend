@@ -923,6 +923,47 @@ app.get('/api/admin/user-details/:username', verifyAdmin, async (req, res) => {
 });
 
 // ============================================
+// ROUTE ADMIN POUR TESTER MISSED CLUES (À SUPPRIMER EN PROD)
+// ============================================
+app.post('/api/admin/add-fake-pioneer', verifyAdmin, async (req, res) => {
+  try {
+    const { username, index, char, url, date } = req.body;
+    
+    // Récupérer le gameState actuel
+    const gameState = await kv.get('gameState') || {};
+    const pioneerHistory = gameState.pioneerHistory || [];
+    
+    // Ajouter le faux pioneer à l'historique
+    pioneerHistory.push({
+      date: date || getTodayUTC(),
+      username: username || 'TestPioneer',
+      url: url || 'https://x.com/test/status/123',
+      index: parseInt(index) || 7,
+      char: char || 'S'
+    });
+    
+    // Sauvegarder le gameState mis à jour
+    gameState.pioneerHistory = pioneerHistory;
+    await kv.set('gameState', gameState);
+    
+    // Ajouter aussi dans les indices révélés globalement
+    await kv.sadd('global:revealed_indices', index.toString());
+    
+    console.log(`[AdminTest] Fake pioneer added: @${username} - Fragment #${index}`);
+    
+    res.json({
+      message: 'Fake pioneer added for testing',
+      pioneer: pioneerHistory[pioneerHistory.length - 1],
+      totalInHistory: pioneerHistory.length
+    });
+    
+  } catch (err) {
+    console.error('[AdminTest] Error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================
 // ROUTE ADMIN STATS (fonctionne sans DEBUG_MODE)
 // ============================================
 app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
@@ -970,6 +1011,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
