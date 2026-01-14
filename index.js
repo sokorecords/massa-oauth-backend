@@ -335,6 +335,75 @@ app.post('/api/game/generate', async (req, res) => {
   });
 });
 
+// Route pour générer un post de rattrapage pour un jour manqué
+app.post('/api/game/generate-catchup', async (req, res) => {
+  const { username, date } = req.body;
+  
+  if (!username || !date) {
+    return res.status(400).json({ error: 'Missing username or date' });
+  }
+  
+  try {
+    // Vérifier que la date est dans le passé
+    const targetDate = new Date(date);
+    const today = new Date(getTodayUTC());
+    
+    if (targetDate >= today) {
+      return res.status(400).json({ error: 'Can only generate catch-up posts for past dates' });
+    }
+    
+    // Générer un message aléatoire (pas de vérification de clue pour les rattrapages)
+    const truthIndex = Math.floor(Math.random() * MASSA_TRUTHS.length);
+    const text = MASSA_TRUTHS[truthIndex];
+    
+    console.log(`[Catchup] Generated catchup post for @${username} for date ${date}`);
+    
+    res.json({
+      text: text,
+      date: date,
+      type: 'catchup'
+    });
+    
+  } catch (err) {
+    console.error('Catchup generation error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Route pour sauvegarder qu'un utilisateur a posté son message de rattrapage
+app.post('/api/game/save-catchup', async (req, res) => {
+  const { username, date, postUrl } = req.body;
+  
+  if (!username || !date || !postUrl) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  
+  try {
+    // Vérifier que le post URL est valide
+    if (!postUrl.includes('/status/')) {
+      return res.status(400).json({ error: 'Invalid post URL' });
+    }
+    
+    // Sauvegarder dans KV
+    const catchupKey = `catchup:${username}:${date}`;
+    await kv.set(catchupKey, {
+      postUrl: postUrl,
+      timestamp: new Date().toISOString()
+    });
+    
+    console.log(`[Catchup] Saved catchup post for @${username} for date ${date}: ${postUrl}`);
+    
+    res.json({
+      status: 'SUCCESS',
+      message: 'Catch-up post saved'
+    });
+    
+  } catch (err) {
+    console.error('Save catchup error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Route pour vérifier l'état sans générer
 app.post('/api/game/check-status', async (req, res) => {
   const { username } = req.body;
@@ -541,11 +610,34 @@ app.get('/api/game/missed-clues/:username', async (req, res) => {
 // 4. Route pour débloquer un fragment manqué via quote
 app.post('/api/game/unlock-missed', async (req, res) => {
   try {
-    const { username, quoteUrl, fragmentIndex } = req.body;
+    const { username, quoteUrl, fragmentIndex, date, catchupPostUrl } = req.body;
     
     if (!quoteUrl || !quoteUrl.includes('/status/')) {
       return res.status(400).json({ error: 'Invalid quote URL' });
     }
+    
+    if (!date) {
+      return res.status(400).json({ error: 'Missing date parameter' });
+    }
+    
+    // ===== NOUVELLE VÉRIFICATION : Post de rattrapage obligatoire =====
+    const catchupKey = `catchup:${username}:${date}`;
+    const catchupData = await kv.get(catchupKey);
+    
+    if (!catchupData) {
+      return res.status(403).json({ 
+        error: 'You must generate and share a catch-up post for this day before unlocking the fragment',
+        requiresCatchup: true
+      });
+    }
+    
+    // Vérifier que le catchupPostUrl correspond (sécurité)
+    if (catchupPostUrl && catchupData.postUrl !== catchupPostUrl) {
+      return res.status(403).json({ 
+        error: 'Catch-up post URL does not match our records'
+      });
+    }
+    // ===== FIN NOUVELLE VÉRIFICATION =====
     
     // Vérifier que le fragment existe dans l'historique
     const gameState = await kv.get('gameState');
@@ -579,13 +671,14 @@ app.post('/api/game/unlock-missed', async (req, res) => {
     // Débloquer le fragment
     await kv.sadd(`user:collection:${username}`, `${pioneer.index}:${pioneer.char}`);
     
-    console.log(`[UnlockMissed] @${username} unlocked fragment #${pioneer.index} via quote`);
+    console.log(`[UnlockMissed] @${username} unlocked fragment #${pioneer.index} via quote (with catchup post)`);
     
-    // Alerte Telegram optionnelle
+    // Alerte Telegram
     sendTelegramAlert(
-      `<b>📦 MISSED CLUE UNLOCKED</b>\n\n` +
+      `<b>📦 MISSED CLUE UNLOCKED (WITH CATCHUP)</b>\n\n` +
       `User @${username} unlocked fragment #${pioneer.index} ("${pioneer.char}")\n` +
       `Original pioneer: @${pioneer.username}\n` +
+      `Catchup post: <a href="${catchupData.postUrl}">View catchup</a>\n` +
       `Quote: <a href="${quoteUrl}">View quote</a>`
     );
     
@@ -970,6 +1063,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
