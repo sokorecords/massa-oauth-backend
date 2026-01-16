@@ -4,6 +4,9 @@ import { kv } from '@vercel/kv';
 import { MASSA_TRUTHS } from './truths.js';
 
 const app = express();
+import path from 'path';
+app.use(express.static(path.join(path.dirname(new URL(import.meta.url).pathname), 'public')));
+
 
 // MODE DEBUG: Mettre à true pour tester
 const DEBUG_MODE = process.env.DEBUG_MODE === "true" || false;
@@ -1105,6 +1108,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
