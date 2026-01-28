@@ -12,7 +12,7 @@ if (DEBUG_MODE) {
 }
 
 app.use(cors({
-  origin: 'https://spreadmassaquest.half-red.net',
+  origin: 'https://spreadmassaquest.deweb.half-red.net',
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -1064,6 +1064,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
