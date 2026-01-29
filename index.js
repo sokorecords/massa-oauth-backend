@@ -145,17 +145,17 @@ async function getGameState() {
     let messagePoolSize;
     
     if (activePlayersYesterday === 0) {
-      messagePoolSize = 30;
+      messagePoolSize = 5;
     } else if (activePlayersYesterday <= 5) {
-      messagePoolSize = 50;
+      messagePoolSize = 10;
     } else if (activePlayersYesterday <= 10) {
-      messagePoolSize = 75;
+      messagePoolSize = 20;
     } else if (activePlayersYesterday <= 20) {
-      messagePoolSize = 125;
+      messagePoolSize = 40;
     } else if (activePlayersYesterday <= 30) {
-      messagePoolSize = 150;
+      messagePoolSize = 60;
     } else if (activePlayersYesterday <= 50) {
-      messagePoolSize = 170;
+      messagePoolSize = 100;
     } else if (activePlayersYesterday <= 100) {
       messagePoolSize = 200;
     } else if (activePlayersYesterday <= 200) {
@@ -1064,6 +1064,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
