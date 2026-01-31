@@ -6,7 +6,7 @@ import { MASSA_TRUTHS } from './truths.js';
 const app = express();
 
 // MODE DEBUG: Mettre à true pour tester
-const DEBUG_MODE = process.env.DEBUG_MODE = false;
+const DEBUG_MODE = process.env.DEBUG_MODE = true;
 if (DEBUG_MODE) {
   console.log("⚠️ DEBUG MODE ACTIVATED");
 }
@@ -1054,6 +1054,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
