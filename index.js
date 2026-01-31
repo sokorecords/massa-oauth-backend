@@ -142,29 +142,19 @@ async function getGameState() {
     console.log(`[GameState] Active players yesterday: ${activePlayersYesterday}`);
     
     // Calculer le pool de messages en fonction du nombre de joueurs
-    let messagePoolSize;
-    
-    if (activePlayersYesterday === 0) {
-      messagePoolSize = 5;
-    } else if (activePlayersYesterday <= 5) {
-      messagePoolSize = 10;
-    } else if (activePlayersYesterday <= 10) {
-      messagePoolSize = 20;
-    } else if (activePlayersYesterday <= 20) {
-      messagePoolSize = 40;
-    } else if (activePlayersYesterday <= 30) {
-      messagePoolSize = 60;
-    } else if (activePlayersYesterday <= 50) {
-      messagePoolSize = 100;
-    } else if (activePlayersYesterday <= 100) {
-      messagePoolSize = 200;
-    } else if (activePlayersYesterday <= 200) {
-      messagePoolSize = 250;
-    } else {
-      messagePoolSize = 300;
-    }
-    
-    console.log(`[GameState] Message pool size: ${messagePoolSize} (from ${MASSA_TRUTHS.length} total messages)`);
+let messagePoolSize;
+
+if (activePlayersYesterday === 0) {
+  messagePoolSize = 3;
+} else if (activePlayersYesterday <= 5) {
+  messagePoolSize = Math.max(3, activePlayersYesterday);
+} else if (activePlayersYesterday <= 10) {
+  messagePoolSize = activePlayersYesterday;
+} else {
+  messagePoolSize = Math.ceil(activePlayersYesterday * 0.5);
+}
+
+console.log(`[GameState] Message pool size: ${messagePoolSize} (from ${MASSA_TRUTHS.length} total messages)`);
     
     const winningMessageId = Math.floor(Math.random() * messagePoolSize);
     const probabilityPerPlayer = (1 / messagePoolSize * 100).toFixed(2);
@@ -313,7 +303,7 @@ app.post('/api/game/generate', async (req, res) => {
     });
   }
 
-  const messageId = Math.floor(Math.random() * MASSA_TRUTHS.length);
+  const messageId = Math.floor(Math.random() * gameState.messagePoolSize);
   
   const newStatus = {
     messageId,
@@ -1064,6 +1054,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
