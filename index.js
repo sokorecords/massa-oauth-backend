@@ -70,7 +70,7 @@ async function updateUserStreak(username) {
     
     // Alerte Telegram pour les milestones
     if (newStreak === 30 || newStreak === 31 || newStreak === 60 || newStreak === 90) {
-      sendTelegramAlert(
+      await sendTelegramAlert(
         `<b>🔥 STREAK MILESTONE! 🔥</b>\n\n` +
         `User @${username} reached a ${newStreak}-day streak!\n` +
         `True dedication to the MassArmy! 🚀`
@@ -532,7 +532,7 @@ app.post('/api/game/submit', async (req, res) => {
         claimStatus: "pioneer"
       });
 
-      sendTelegramAlert(
+      await sendTelegramAlert(
         `<b>🚨 FRAGMENT REVEALED! 🚨</b>\n\n` +
         `User @${username} discovered today's clue.\n` +
         `Character: <code>${char}</code> at position ${gameState.activeFragmentIndex}\n\n` +
@@ -664,7 +664,7 @@ app.post('/api/game/unlock-missed', async (req, res) => {
     console.log(`[UnlockMissed] @${username} unlocked fragment #${pioneer.index} via quote (with catchup post)`);
     
     // Alerte Telegram
-    sendTelegramAlert(
+    await sendTelegramAlert(
       `<b>📦 MISSED CLUE UNLOCKED (WITH CATCHUP)</b>\n\n` +
       `User @${username} unlocked fragment #${pioneer.index} ("${pioneer.char}")\n` +
       `Original pioneer: @${pioneer.username}\n` +
@@ -1054,6 +1054,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
