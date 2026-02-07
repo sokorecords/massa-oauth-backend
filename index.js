@@ -1047,8 +1047,59 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
         estimatedProbWith15Players: `${estimatedProbWith15Players}%`
       }
     });
-  } catch (err) {
+} catch (err) {
     console.error('Admin stats error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================
+// ROUTE ADMIN - GESTION PIONEER URL
+// ============================================
+
+// Route admin pour voir le message gagnant du jour
+app.get('/api/admin/winning-message', verifyAdmin, async (req, res) => {
+  try {
+    const gameState = await kv.get('gameState');
+    
+    res.json({
+      winningMessageId: gameState?.winningMessageId,
+      winningMessage: MASSA_TRUTHS[gameState?.winningMessageId],
+      pioneer: gameState?.pioneer || null
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Route admin pour mettre à jour l'URL du pioneer (si tweet supprimé)
+app.post('/api/admin/update-pioneer-url', verifyAdmin, async (req, res) => {
+  try {
+    const { newUrl } = req.body;
+    
+    if (!newUrl || !newUrl.includes('/status/')) {
+      return res.status(400).json({ error: 'Invalid URL format' });
+    }
+    
+    const gameState = await kv.get('gameState');
+    
+    if (!gameState?.pioneer) {
+      return res.status(400).json({ error: 'No pioneer found today' });
+    }
+    
+    const oldUrl = gameState.pioneer.url;
+    gameState.pioneer.url = newUrl;
+    await kv.set('gameState', gameState);
+    
+    console.log(`[Admin] Pioneer URL updated from ${oldUrl} to ${newUrl}`);
+    
+    res.json({ 
+      message: 'Pioneer URL updated successfully',
+      pioneer: gameState.pioneer,
+      winningMessage: MASSA_TRUTHS[gameState.winningMessageId]
+    });
+  } catch (err) {
+    console.error('Update pioneer URL error:', err);
     res.status(500).json({ error: err.message });
   }
 });
