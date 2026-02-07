@@ -661,12 +661,12 @@ app.post('/api/game/unlock-missed', async (req, res) => {
     // Débloquer le fragment
     await kv.sadd(`user:collection:${username}`, `${pioneer.index}:${pioneer.char}`);
     
-    console.log(`[UnlockMissed] @${username} unlocked fragment #${pioneer.index} via quote (with catchup post)`);
+console.log(`[UnlockMissed] @${username} unlocked fragment #${Number(pioneer.index) + 1} via quote (with catchup post)`);
     
     // Alerte Telegram
     await sendTelegramAlert(
       `<b>📦 MISSED CLUE UNLOCKED (WITH CATCHUP)</b>\n\n` +
-      `User @${username} unlocked fragment #${pioneer.index} ("${pioneer.char}")\n` +
+      `User @${username} unlocked fragment #${Number(pioneer.index) + 1} ("${pioneer.char}")\n` +
       `Original pioneer: @${pioneer.username}\n` +
       `Catchup post: <a href="${catchupData.postUrl}">View catchup</a>\n` +
       `Quote: <a href="${quoteUrl}">View quote</a>`
@@ -678,7 +678,7 @@ app.post('/api/game/unlock-missed', async (req, res) => {
         index: pioneer.index,
         char: pioneer.char
       },
-      message: `Fragment #${pioneer.index} unlocked! Character "${pioneer.char}" added to your collection.`
+message: `Fragment #${Number(pioneer.index) + 1} unlocked! Character "${pioneer.char}" added to your collection.`
     });
     
   } catch (err) {
@@ -1054,6 +1054,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
