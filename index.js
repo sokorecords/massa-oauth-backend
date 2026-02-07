@@ -535,7 +535,7 @@ app.post('/api/game/submit', async (req, res) => {
       await sendTelegramAlert(
         `<b>🚨 FRAGMENT REVEALED! 🚨</b>\n\n` +
         `User @${username} discovered today's clue.\n` +
-        `Character: <code>${char}</code> at position ${gameState.activeFragmentIndex}\n\n` +
+        `Character: <code>${char}</code> at position ${gameState.activeFragmentIndex + 1}\n\n` +
         `<a href="${tweetUrl}">View the post on X</a>`
       );
 
@@ -1054,6 +1054,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
