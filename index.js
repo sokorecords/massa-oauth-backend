@@ -1071,7 +1071,67 @@ app.get('/api/admin/winning-message', verifyAdmin, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// Route admin pour voir l'historique des pioneers
+app.get('/api/admin/pioneer-history', verifyAdmin, async (req, res) => {
+  try {
+    const gameState = await kv.get('gameState');
+    const history = gameState?.pioneerHistory || [];
+    
+    // Ajouter le texte du message pour chaque pioneer
+    const historyWithMessages = history.map(p => ({
+      ...p,
+      message: MASSA_TRUTHS[p.index] || 'Message not found'
+    }));
+    
+    res.json({
+      pioneerHistory: historyWithMessages,
+      totalRevealed: history.length
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
+// Route admin pour mettre à jour l'URL d'un pioneer dans l'historique
+app.post('/api/admin/update-history-url', verifyAdmin, async (req, res) => {
+  try {
+    const { date, newUrl } = req.body;
+    
+    if (!date || !newUrl) {
+      return res.status(400).json({ error: 'Missing date or newUrl' });
+    }
+    
+    if (!newUrl.includes('/status/')) {
+      return res.status(400).json({ error: 'Invalid URL format' });
+    }
+    
+    const gameState = await kv.get('gameState');
+    
+    if (!gameState?.pioneerHistory) {
+      return res.status(400).json({ error: 'No pioneer history found' });
+    }
+    
+    // Trouver le pioneer par date
+    const pioneerIndex = gameState.pioneerHistory.findIndex(p => p.date === date);
+    
+    if (pioneerIndex === -1) {
+      return res.status(404).json({ error: `No pioneer found for date ${date}` });
+    }
+    
+    const oldUrl = gameState.pioneerHistory[pioneerIndex].url;
+    gameState.pioneerHistory[pioneerIndex].url = newUrl;
+    await kv.set('gameState', gameState);
+    
+    console.log(`[Admin] History URL updated for ${date}: ${oldUrl} -> ${newUrl}`);
+    
+    res.json({
+      message: 'Pioneer history URL updated successfully',
+      updated: gameState.pioneerHistory[pioneerIndex]
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 // Route admin pour mettre à jour l'URL du pioneer (si tweet supprimé)
 app.post('/api/admin/update-pioneer-url', verifyAdmin, async (req, res) => {
   try {
@@ -1105,6 +1165,7 @@ app.post('/api/admin/update-pioneer-url', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
