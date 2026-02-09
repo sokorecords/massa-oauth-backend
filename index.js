@@ -747,6 +747,7 @@ app.post('/api/admin/login', async (req, res) => {
 app.get('/api/admin/all-users', verifyAdmin, async (req, res) => {
   try {
     const today = getTodayUTC();
+    const yesterday = getYesterdayUTC();
     
     // Récupérer tous les utilisateurs qui ont une collection
     const allKeys = await kv.keys('user:collection:*');
@@ -761,11 +762,33 @@ app.get('/api/admin/all-users', verifyAdmin, async (req, res) => {
       // Exclure le marqueur "_user_registered" du comptage
       const realFragments = collection ? collection.filter(item => item !== '_user_registered') : [];
       
+      // Calculer le streak réel basé sur lastVisit
+      let realStreak = 0;
+      let streakStatus = 'lost';
+      
+      if (streak?.lastVisit) {
+        if (streak.lastVisit === today) {
+          // A joué aujourd'hui
+          realStreak = streak.streak;
+          streakStatus = 'active';
+        } else if (streak.lastVisit === yesterday) {
+          // A joué hier, streak encore valide mais doit jouer aujourd'hui
+          realStreak = streak.streak;
+          streakStatus = 'at_risk';
+        } else {
+          // N'a pas joué depuis plus d'un jour, streak perdu
+          realStreak = 0;
+          streakStatus = 'lost';
+        }
+      }
+      
       users.push({
         username,
         fragmentsCount: realFragments.length,
         collection: realFragments,
-        streak: streak?.streak || 0,
+        streakStored: streak?.streak || 0,
+        streakReal: realStreak,
+        streakStatus: streakStatus,
         lastActive: streak?.lastVisit || null,
         status: status
       });
@@ -1165,6 +1188,7 @@ app.post('/api/admin/update-pioneer-url', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
