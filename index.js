@@ -1004,6 +1004,7 @@ app.get('/api/admin/user-details/:username', verifyAdmin, async (req, res) => {
   try {
     const { username } = req.params;
     const today = getTodayUTC();
+    const yesterday = getYesterdayUTC();
     
     // Collection
     const collection = await kv.smembers(`user:collection:${username}`);
@@ -1012,6 +1013,23 @@ app.get('/api/admin/user-details/:username', verifyAdmin, async (req, res) => {
     // Streak
     const streak = await kv.get(`streak:${username}`);
     
+    // Calculer le streak réel basé sur lastVisit
+    let realStreak = 0;
+    let streakStatus = 'lost';
+    
+    if (streak?.lastVisit) {
+      if (streak.lastVisit === today) {
+        realStreak = streak.streak;
+        streakStatus = 'active';
+      } else if (streak.lastVisit === yesterday) {
+        realStreak = streak.streak;
+        streakStatus = 'at_risk';
+      } else {
+        realStreak = 0;
+        streakStatus = 'lost';
+      }
+    }
+    
     // Status aujourd'hui
     const status = await kv.get(`status:${username}:${today}`);
     
@@ -1019,7 +1037,10 @@ app.get('/api/admin/user-details/:username', verifyAdmin, async (req, res) => {
       username,
       collection: realFragments,
       fragmentsCount: realFragments.length,
-      streak: streak || { streak: 0, lastVisit: null },
+      streakStored: streak?.streak || 0,
+      streakReal: realStreak,
+      streakStatus: streakStatus,
+      lastActive: streak?.lastVisit || null,
       todayStatus: status || null
     });
     
@@ -1188,6 +1209,7 @@ app.post('/api/admin/update-pioneer-url', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
