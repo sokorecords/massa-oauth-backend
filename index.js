@@ -1034,15 +1034,21 @@ app.get('/api/admin/user-details/:username', verifyAdmin, async (req, res) => {
     const status = await kv.get(`status:${username}:${today}`);
     
     res.json({
-      username,
-      collection: realFragments,
-      fragmentsCount: realFragments.length,
-      streakStored: streak?.streak || 0,
-      streakReal: realStreak,
-      streakStatus: streakStatus,
-      lastActive: streak?.lastVisit || null,
-      todayStatus: status || null
-    });
+  username,
+  collection: realFragments,
+  fragmentsCount: realFragments.length,
+  // Ancien format pour compatibilité avec admin.html
+  streak: {
+    streak: realStreak,
+    lastVisit: streak?.lastVisit || null
+  },
+  // Nouveau format détaillé
+  streakStored: streak?.streak || 0,
+  streakReal: realStreak,
+  streakStatus: streakStatus,
+  lastActive: streak?.lastVisit || null,
+  todayStatus: status || null
+});
     
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -1209,6 +1215,7 @@ app.post('/api/admin/update-pioneer-url', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
