@@ -786,7 +786,7 @@ app.get('/api/admin/all-users', verifyAdmin, async (req, res) => {
         username,
         fragmentsCount: realFragments.length,
         collection: realFragments,
-        streak: realstreak,
+        streak: realStreak,
         streakStored: streak?.streak || 0,
         streakReal: realStreak,
         streakStatus: streakStatus,
@@ -1216,6 +1216,7 @@ app.post('/api/admin/update-pioneer-url', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
