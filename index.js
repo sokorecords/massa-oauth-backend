@@ -1215,7 +1215,50 @@ app.post('/api/admin/update-pioneer-url', verifyAdmin, async (req, res) => {
   }
 });
 
+// Route admin pour corriger le bug d'index 53 -> 51
+app.post('/api/admin/fix-index-bug', verifyAdmin, async (req, res) => {
+  try {
+    const wrongIndex = 53;
+    const correctIndex = 51;
+    const correctChar = PRIVATE_KEY_CHARS[correctIndex]; // "L"
+    
+    // 1. Corriger le gameState
+    const gameState = await kv.get('gameState');
+    
+    if (gameState?.pioneer?.index === wrongIndex) {
+      gameState.pioneer.index = correctIndex;
+      gameState.pioneer.char = correctChar;
+      await kv.set('gameState', gameState);
+    }
+    
+    // 2. Corriger global:revealed_indices
+    await kv.srem('global:revealed_indices', wrongIndex.toString());
+    await kv.sadd('global:revealed_indices', correctIndex.toString());
+    
+    // 3. Corriger la collection de vedattsn
+    await kv.srem('user:collection:vedattsn', `${wrongIndex}:L`);
+    await kv.sadd('user:collection:vedattsn', `${correctIndex}:${correctChar}`);
+    
+    // 4. Corriger la collection de try2shutmedown
+    await kv.srem('user:collection:try2shutmedown', `${wrongIndex}:L`);
+    await kv.sadd('user:collection:try2shutmedown', `${correctIndex}:${correctChar}`);
+    
+    console.log(`[Admin] Fixed index bug: ${wrongIndex} -> ${correctIndex} for vedattsn and try2shutmedown`);
+    
+    res.json({
+      message: 'Index bug fixed successfully',
+      wrongIndex,
+      correctIndex,
+      correctChar,
+      usersFixed: ['vedattsn', 'try2shutmedown']
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default app;
+
 
 
 
