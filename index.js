@@ -1322,7 +1322,83 @@ app.post('/api/admin/reset-user-complete', verifyAdmin, async (req, res) => {
   }
 });
 
+// Route admin pour corriger les index après changement de clé
+app.post('/api/admin/fix-key-migration', verifyAdmin, async (req, res) => {
+  try {
+    // Mapping ancien index -> nouvel index
+    const corrections = [
+      { oldIndex: 50, oldChar: 'c', newIndex: 48, newChar: 'c' },
+      { oldIndex: 53, oldChar: 'L', newIndex: 51, newChar: 'L' }
+    ];
+    
+    // 1. Corriger global:revealed_indices
+    for (const c of corrections) {
+      await kv.srem('global:revealed_indices', c.oldIndex.toString());
+      await kv.sadd('global:revealed_indices', c.newIndex.toString());
+    }
+    
+    // 2. Corriger les collections de tous les utilisateurs
+    const allKeys = await kv.keys('user:collection:*');
+    const usersFixed = [];
+    
+    for (const key of allKeys) {
+      const username = key.replace('user:collection:', '');
+      let modified = false;
+      
+      for (const c of corrections) {
+        const removed = await kv.srem(key, `${c.oldIndex}:${c.oldChar}`);
+        if (removed > 0) {
+          await kv.sadd(key, `${c.newIndex}:${c.newChar}`);
+          modified = true;
+        }
+      }
+      
+      if (modified) {
+        usersFixed.push(username);
+      }
+    }
+    
+    // 3. Corriger le gameState (pioneer actuel)
+    const gameState = await kv.get('gameState');
+    
+    if (gameState?.pioneer) {
+      for (const c of corrections) {
+        if (gameState.pioneer.index === c.oldIndex) {
+          gameState.pioneer.index = c.newIndex;
+          gameState.pioneer.char = c.newChar;
+        }
+      }
+    }
+    
+    // 4. Corriger le pioneerHistory
+    if (gameState?.pioneerHistory) {
+      for (const pioneer of gameState.pioneerHistory) {
+        for (const c of corrections) {
+          if (pioneer.index === c.oldIndex) {
+            pioneer.index = c.newIndex;
+            pioneer.char = c.newChar;
+          }
+        }
+      }
+    }
+    
+    await kv.set('gameState', gameState);
+    
+    console.log(`[Admin] Key migration completed. Users fixed: ${usersFixed.join(', ')}`);
+    
+    res.json({
+      message: 'Key migration completed successfully',
+      corrections,
+      usersFixed,
+      totalUsersFixed: usersFixed.length
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default app;
+
 
 
 
