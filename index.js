@@ -1257,7 +1257,47 @@ app.post('/api/admin/fix-index-bug', verifyAdmin, async (req, res) => {
   }
 });
 
+// Route admin pour annuler le fix (remettre 53:L)
+app.post('/api/admin/undo-fix-index-bug', verifyAdmin, async (req, res) => {
+  try {
+    const wrongIndex = 51;
+    const correctIndex = 53;
+    const correctChar = 'L';
+    
+    // 1. Corriger le gameState
+    const gameState = await kv.get('gameState');
+    
+    if (gameState?.pioneer?.index === wrongIndex) {
+      gameState.pioneer.index = correctIndex;
+      gameState.pioneer.char = correctChar;
+      await kv.set('gameState', gameState);
+    }
+    
+    // 2. Corriger global:revealed_indices
+    await kv.srem('global:revealed_indices', wrongIndex.toString());
+    await kv.sadd('global:revealed_indices', correctIndex.toString());
+    
+    // 3. Corriger la collection de vedattsn
+    await kv.srem('user:collection:vedattsn', '51:2');
+    await kv.sadd('user:collection:vedattsn', '53:L');
+    
+    // 4. Corriger la collection de try2shutmedown
+    await kv.srem('user:collection:try2shutmedown', '51:2');
+    await kv.sadd('user:collection:try2shutmedown', '53:L');
+    
+    console.log(`[Admin] Undo fix: restored 53:L for vedattsn and try2shutmedown`);
+    
+    res.json({
+      message: 'Fix undone successfully - restored 53:L',
+      usersFixed: ['vedattsn', 'try2shutmedown']
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default app;
+
 
 
 
