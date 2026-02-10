@@ -1397,7 +1397,50 @@ app.post('/api/admin/fix-key-migration', verifyAdmin, async (req, res) => {
   }
 });
 
+// Route admin pour corriger le firstTweetUrl d'un utilisateur
+app.post('/api/admin/fix-user-tweet-url', verifyAdmin, async (req, res) => {
+  try {
+    const { username, tweetUrl } = req.body;
+    
+    if (!username || !tweetUrl) {
+      return res.status(400).json({ error: 'Missing username or tweetUrl' });
+    }
+    
+    if (!tweetUrl.includes('/status/')) {
+      return res.status(400).json({ error: 'Invalid tweet URL format' });
+    }
+    
+    const today = getTodayUTC();
+    const statusKey = `status:${username}:${today}`;
+    const status = await kv.get(statusKey);
+    
+    if (!status) {
+      return res.status(400).json({ error: 'No status found for this user today' });
+    }
+    
+    // Extraire le tweetId de l'URL
+    const urlMatch = tweetUrl.match(/\/status\/(\d+)/);
+    const tweetId = urlMatch ? urlMatch[1] : null;
+    
+    status.firstTweetUrl = tweetUrl;
+    status.firstTweetId = tweetId;
+    
+    await kv.set(statusKey, status);
+    
+    console.log(`[Admin] Fixed firstTweetUrl for ${username}: ${tweetUrl}`);
+    
+    res.json({
+      message: 'User tweet URL fixed successfully',
+      username,
+      status
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default app;
+
 
 
 
