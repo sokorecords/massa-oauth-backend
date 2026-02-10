@@ -1296,7 +1296,34 @@ app.post('/api/admin/undo-fix-index-bug', verifyAdmin, async (req, res) => {
   }
 });
 
+// Route admin pour reset complet d'un utilisateur
+app.post('/api/admin/reset-user-complete', verifyAdmin, async (req, res) => {
+  try {
+    const { username } = req.body;
+    const today = getTodayUTC();
+    
+    // Supprimer la collection
+    await kv.del(`user:collection:${username}`);
+    
+    // Supprimer le streak
+    await kv.del(`streak:${username}`);
+    
+    // Supprimer le status du jour
+    await kv.del(`status:${username}:${today}`);
+    
+    console.log(`[Admin] Complete reset for user: ${username}`);
+    
+    res.json({
+      message: `User ${username} completely reset`,
+      deleted: ['collection', 'streak', 'today status']
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default app;
+
 
 
 
