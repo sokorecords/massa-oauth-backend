@@ -14,7 +14,7 @@ Some messages carry fragments. Play the game and uncover hidden rewards at sprea
   `Massa provides deterministic finality, meaning confirmed blocks never revert. Once finalized, transactions and data become immutable.
 @massachain $MAS
 Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
-  `Post-quantum cryptography is integrated directly into Massa's protocol. Security is anticipated rather than added as a later upgrade.
+  `Massa’s multithreaded block production allows scalable performance without sacrificing decentralization.
 @massachain $MAS
 Some messages carry fragments. Play the game and uncover hidden rewards at spreadmassaquest.deweb.half-red.net`,
   `Massa uses ledger pruning to keep node storage requirements accessible over time. Decentralization remains viable for everyday participants.
@@ -1125,6 +1125,7 @@ Descubre fragmentos ocultos en los mensajes — ¡únete al juego Spread Massa Q
 @massachain $MAS
 Descubre fragmentos ocultos en los mensajes — ¡únete al juego Spread Massa Quest y gana premios! Visita spreadmassaquest.deweb.half-red.net`,
 ];
+
 
 
 
