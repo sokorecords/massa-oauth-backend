@@ -156,7 +156,9 @@ if (activePlayersYesterday === 0) {
 
 console.log(`[GameState] Message pool size: ${messagePoolSize} (from ${MASSA_TRUTHS.length} total messages)`);
     
-    const winningMessageId = Math.floor(Math.random() * messagePoolSize);
+    const dailyOffset = Math.floor(Math.random() * MASSA_TRUTHS.length);
+const rawWinningId = Math.floor(Math.random() * messagePoolSize);
+const winningMessageId = (rawWinningId + dailyOffset) % MASSA_TRUTHS.length;
     const probabilityPerPlayer = (1 / messagePoolSize * 100).toFixed(2);
     console.log(`[GameState] Winning message ID: ${winningMessageId} (probability per player: ${probabilityPerPlayer}%)`);
     
@@ -167,6 +169,7 @@ console.log(`[GameState] Message pool size: ${messagePoolSize} (from ${MASSA_TRU
       activeFragmentIndex: activeFragment,
       winningMessageId: winningMessageId,
       messagePoolSize: messagePoolSize,
+      dailyOffset: dailyOffset,
       activePlayersYesterday: activePlayersYesterday,
       pioneer: null, // Reset pour aujourd'hui
       pioneerHistory: pioneerHistory // Conserver l'historique
@@ -303,7 +306,8 @@ app.post('/api/game/generate', async (req, res) => {
     });
   }
 
-  const messageId = Math.floor(Math.random() * gameState.messagePoolSize);
+  const rawId = Math.floor(Math.random() * gameState.messagePoolSize);
+const messageId = (rawId + (gameState.dailyOffset || 0)) % MASSA_TRUTHS.length;
   
   const newStatus = {
     messageId,
@@ -1440,6 +1444,7 @@ app.post('/api/admin/fix-user-tweet-url', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
