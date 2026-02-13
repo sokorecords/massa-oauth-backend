@@ -170,6 +170,7 @@ const winningMessageId = (rawWinningId + dailyOffset) % MASSA_TRUTHS.length;
       winningMessageId: winningMessageId,
       messagePoolSize: messagePoolSize,
       dailyOffset: dailyOffset,
+      usedMessageIds: [],
       activePlayersYesterday: activePlayersYesterday,
       pioneer: null, // Reset pour aujourd'hui
       pioneerHistory: pioneerHistory // Conserver l'historique
@@ -306,8 +307,26 @@ app.post('/api/game/generate', async (req, res) => {
     });
   }
 
-  const rawId = Math.floor(Math.random() * gameState.messagePoolSize);
-const messageId = (rawId + (gameState.dailyOffset || 0)) % MASSA_TRUTHS.length;
+// Construire le pool disponible (exclure les déjà tirés)
+  const usedIds = gameState.usedMessageIds || [];
+  const allPoolIds = Array.from({length: gameState.messagePoolSize}, (_, i) => 
+    (i + (gameState.dailyOffset || 0)) % MASSA_TRUTHS.length
+  );
+  const availableIds = allPoolIds.filter(id => !usedIds.includes(id));
+  
+  // Si pool épuisé, tirer un message aléatoire hors du pool
+  let messageId;
+  if (availableIds.length > 0) {
+    messageId = availableIds[Math.floor(Math.random() * availableIds.length)];
+  } else {
+    const allIndices = Array.from({length: MASSA_TRUTHS.length}, (_, i) => i);
+    const outsidePool = allIndices.filter(id => !usedIds.includes(id));
+    messageId = outsidePool[Math.floor(Math.random() * outsidePool.length)];
+  }
+  
+  // Sauvegarder le messageId utilisé
+  gameState.usedMessageIds = [...usedIds, messageId];
+  await kv.set('gameState', gameState);
   
   const newStatus = {
     messageId,
@@ -1444,6 +1463,7 @@ app.post('/api/admin/fix-user-tweet-url', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
