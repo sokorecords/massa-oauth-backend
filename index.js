@@ -633,24 +633,30 @@ app.post('/api/game/unlock-missed', async (req, res) => {
       return res.status(400).json({ error: 'Missing date parameter' });
     }
     
-    // ===== NOUVELLE VÉRIFICATION : Post de rattrapage obligatoire =====
-    const catchupKey = `catchup:${username}:${date}`;
-    const catchupData = await kv.get(catchupKey);
+    // ===== VÉRIFICATION : Catchup requis SEULEMENT si le joueur n'a pas joué ce jour =====
+    const statusKey = `status:${username}:${date}`;
+    const dayStatus = await kv.get(statusKey);
+    const playedThatDay = dayStatus?.submitted === true;
+    let catchupData = null;
     
-    if (!catchupData) {
-      return res.status(403).json({ 
-        error: 'You must generate and share a catch-up post for this day before unlocking the fragment',
-        requiresCatchup: true
-      });
+    if (!playedThatDay) {
+      const catchupKey = `catchup:${username}:${date}`;
+      catchupData = await kv.get(catchupKey);
+      
+      if (!catchupData) {
+        return res.status(403).json({ 
+          error: 'You must generate and share a catch-up post for this day before unlocking the fragment',
+          requiresCatchup: true
+        });
+      }
+      
+      if (catchupPostUrl && catchupData.postUrl !== catchupPostUrl) {
+        return res.status(403).json({ 
+          error: 'Catch-up post URL does not match our records'
+        });
+      }
     }
-    
-    // Vérifier que le catchupPostUrl correspond (sécurité)
-    if (catchupPostUrl && catchupData.postUrl !== catchupPostUrl) {
-      return res.status(403).json({ 
-        error: 'Catch-up post URL does not match our records'
-      });
-    }
-    // ===== FIN NOUVELLE VÉRIFICATION =====
+    // ===== FIN VÉRIFICATION =====
     
     // Vérifier que le fragment existe dans l'historique
     const gameState = await kv.get('gameState');
@@ -684,14 +690,14 @@ app.post('/api/game/unlock-missed', async (req, res) => {
     // Débloquer le fragment
     await kv.sadd(`user:collection:${username}`, `${pioneer.index}:${pioneer.char}`);
     
-console.log(`[UnlockMissed] @${username} unlocked fragment #${Number(pioneer.index) + 1} via quote (with catchup post)`);
+console.log(`[UnlockMissed] @${username} unlocked fragment #${Number(pioneer.index) + 1} via quote (played: ${playedThatDay})`);
     
     // Alerte Telegram
     await sendTelegramAlert(
-      `<b>📦 MISSED CLUE UNLOCKED (WITH CATCHUP)</b>\n\n` +
+      `<b>📦 MISSED CLUE UNLOCKED</b>\n\n` +
       `User @${username} unlocked fragment #${Number(pioneer.index) + 1} ("${pioneer.char}")\n` +
       `Original pioneer: @${pioneer.username}\n` +
-      `Catchup post: <a href="${catchupData.postUrl}">View catchup</a>\n` +
+      (catchupData ? `Catchup post: <a href="${catchupData.postUrl}">View catchup</a>\n` : `Played that day: ✅\n`) +
       `Quote: <a href="${quoteUrl}">View quote</a>`
     );
     
@@ -1463,6 +1469,7 @@ app.post('/api/admin/fix-user-tweet-url', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
