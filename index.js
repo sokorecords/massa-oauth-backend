@@ -1133,6 +1133,78 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
   }
 });
 
+// Route admin pour les stats hebdomadaires (posts X)
+app.get('/api/admin/weekly-stats', verifyAdmin, async (req, res) => {
+  try {
+    const today = new Date();
+    const stats = [];
+    let totalOriginalPosts = 0;
+    let totalQuotes = 0;
+    let totalCatchups = 0;
+    
+    // Parcourir les 7 derniers jours
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const date = d.toISOString().split('T')[0];
+      
+      const dayKeys = await kv.keys(`status:*:${date}`);
+      let dayPosts = 0;
+      let dayQuotes = 0;
+      
+      for (const key of dayKeys) {
+        const status = await kv.get(key);
+        if (status?.submitted) dayPosts++;
+        if (status?.claimStatus === 'follower') dayQuotes++;
+      }
+      
+      // Catchup posts pour ce jour
+      const catchupKeys = await kv.keys(`catchup:*:${date}`);
+      
+      totalOriginalPosts += dayPosts;
+      totalQuotes += dayQuotes;
+      totalCatchups += catchupKeys.length;
+      
+      stats.push({
+        date,
+        originalPosts: dayPosts,
+        followerQuotes: dayQuotes,
+        catchupPosts: catchupKeys.length
+      });
+    }
+    
+    // Missed clue quotes (depuis pioneer history)
+    const gameState = await kv.get('gameState');
+    const allKeys = await kv.keys('user:collection:*');
+    let totalFragments = 0;
+    for (const key of allKeys) {
+      const col = await kv.smembers(key);
+      if (col) totalFragments += col.filter(i => i !== '_user_registered').length;
+    }
+    
+    const pioneersCount = gameState?.pioneerHistory?.length || 0;
+    const missedClueQuotes = Math.max(0, totalFragments - pioneersCount - totalQuotes);
+    
+    res.json({
+      period: `${stats[0].date} to ${stats[stats.length - 1].date}`,
+      daily: stats,
+      totals: {
+        originalPosts: totalOriginalPosts,
+        followerQuotes: totalQuotes,
+        catchupPosts: totalCatchups,
+        missedClueQuotes: missedClueQuotes,
+        estimatedTotalXPosts: totalOriginalPosts + totalQuotes + totalCatchups + missedClueQuotes
+      },
+      players: {
+        totalRegistered: allKeys.length,
+        pioneersCount: pioneersCount
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ============================================
 // ROUTE ADMIN - GESTION PIONEER URL
 // ============================================
@@ -1469,6 +1541,7 @@ app.post('/api/admin/fix-user-tweet-url', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
