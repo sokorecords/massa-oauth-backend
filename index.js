@@ -833,6 +833,20 @@ app.get('/api/admin/all-users', verifyAdmin, async (req, res) => {
   }
 });
 
+// Route admin pour retirer un fragment d'un utilisateur
+app.post('/api/admin/remove-fragment', verifyAdmin, async (req, res) => {
+  try {
+    const { username, fragment } = req.body;
+    if (!username || !fragment) {
+      return res.status(400).json({ error: 'Missing username or fragment' });
+    }
+    const removed = await kv.srem(`user:collection:${username}`, fragment);
+    res.json({ message: `Fragment "${fragment}" removed from ${username}`, removed });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ========================================
 // ROUTES DEBUG
 // ========================================
@@ -1541,6 +1555,7 @@ app.post('/api/admin/fix-user-tweet-url', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
