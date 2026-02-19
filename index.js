@@ -603,10 +603,21 @@ app.get('/api/game/missed-clues/:username', async (req, res) => {
     const gameState = await kv.get('gameState');
     const pioneerHistory = gameState?.pioneerHistory || [];
     
-    // Filtrer les fragments que l'utilisateur n'a PAS
-    const missedClues = pioneerHistory.filter(pioneer => 
+// Filtrer les fragments que l'utilisateur n'a PAS
+    const missedCluesRaw = pioneerHistory.filter(pioneer => 
       !userFragments.includes(pioneer.index)
     );
+    
+    // Ajouter l'info "playedThatDay" pour chaque missed clue
+    const missedClues = [];
+    for (const clue of missedCluesRaw) {
+      const statusKey = `status:${username}:${clue.date}`;
+      const dayStatus = await kv.get(statusKey);
+      missedClues.push({
+        ...clue,
+        playedThatDay: dayStatus?.submitted === true
+      });
+    }
     
     res.json({
       missedClues,
@@ -1555,6 +1566,7 @@ app.post('/api/admin/fix-user-tweet-url', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
