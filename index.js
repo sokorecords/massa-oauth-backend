@@ -1110,6 +1110,17 @@ app.get('/api/admin/user-details/:username', verifyAdmin, async (req, res) => {
   }
 });
 
+// Route admin pour vérifier le statut d'un joueur à une date précise
+app.get('/api/admin/user-status-date/:username/:date', verifyAdmin, async (req, res) => {
+  try {
+    const { username, date } = req.params;
+    const status = await kv.get(`status:${username}:${date}`);
+    const catchup = await kv.get(`catchup:${username}:${date}`);
+    res.json({ username, date, status, catchup });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // ============================================
 // ROUTE ADMIN STATS (fonctionne sans DEBUG_MODE)
@@ -1566,6 +1577,7 @@ app.post('/api/admin/fix-user-tweet-url', verifyAdmin, async (req, res) => {
 });
 
 export default app;
+
 
 
 
