@@ -11,6 +11,14 @@ if (DEBUG_MODE) {
   console.log("⚠️ DEBUG MODE ACTIVATED");
 }
 
+// ============================================
+// 🔒 GAME FROZEN - Mode Lecture Seule
+// ============================================
+const GAME_FROZEN = process.env.GAME_FROZEN === 'true';
+if (GAME_FROZEN) {
+  console.log("🔒 GAME IS FROZEN - Only reading existing fragments is allowed");
+}
+
 app.use(cors({
   origin: 'https://spreadmassaquest.deweb.half-red.net',
   methods: ['GET', 'POST', 'OPTIONS'],
@@ -289,6 +297,16 @@ app.get('/api/user/streak/:username', async (req, res) => {
 app.post('/api/game/generate', async (req, res) => {
   const { username } = req.body;
   
+  // ✅ JEUX GELÉ - Pas de nouvelle génération de messages
+  if (GAME_FROZEN) {
+    return res.status(503).json({
+      status: "GAME_FROZEN",
+      error: "Game generation is currently frozen",
+      message: "We're evaluating our strategy. Your existing fragments are safe and preserved. Thank you for your participation!",
+      canViewCollection: true
+    });
+  }
+  
   const streak = await updateUserStreak(username);
   const userStatus = await getUserStatus(username);
   const gameState = await getGameState();
@@ -352,6 +370,14 @@ app.post('/api/game/generate', async (req, res) => {
 app.post('/api/game/generate-catchup', async (req, res) => {
   const { username, date } = req.body;
   
+  // ✅ JEUX GELÉ
+  if (GAME_FROZEN) {
+    return res.status(503).json({
+      status: "GAME_FROZEN",
+      error: "Game is frozen - no new catch-up posts can be generated"
+    });
+  }
+  
   if (!username || !date) {
     return res.status(400).json({ error: 'Missing username or date' });
   }
@@ -386,6 +412,14 @@ app.post('/api/game/generate-catchup', async (req, res) => {
 // Route pour sauvegarder qu'un utilisateur a posté son message de rattrapage
 app.post('/api/game/save-catchup', async (req, res) => {
   const { username, date, postUrl } = req.body;
+  
+  // ✅ JEUX GELÉ
+  if (GAME_FROZEN) {
+    return res.status(503).json({
+      status: "GAME_FROZEN",
+      error: "Game is frozen - submissions are disabled"
+    });
+  }
   
   if (!username || !date || !postUrl) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -429,7 +463,8 @@ app.post('/api/game/check-status', async (req, res) => {
     return res.json({
       status: "NO_STATUS",
       userStatus: null,
-      pioneer: gameState.pioneer
+      pioneer: gameState.pioneer,
+      gameFrozen: GAME_FROZEN
     });
   }
   
@@ -439,13 +474,23 @@ app.post('/api/game/check-status', async (req, res) => {
     messageId: userStatus.messageId,
     text: userStatus.messageId !== undefined ? MASSA_TRUTHS[userStatus.messageId] : null,
     userStatus,
-    pioneer: gameState.pioneer
+    pioneer: gameState.pioneer,
+    gameFrozen: GAME_FROZEN
   });
 });
 
 // 2. Submit link
 app.post('/api/game/submit', async (req, res) => {
   const { username, tweetUrl, isRepost } = req.body;
+  
+  // ✅ JEUX GELÉ
+  if (GAME_FROZEN) {
+    return res.status(503).json({
+      status: "GAME_FROZEN",
+      error: "Game is frozen - submissions are disabled",
+      message: "No new fragments can be discovered during this period. Your existing collection is preserved."
+    });
+  }
   
   if (!tweetUrl || !tweetUrl.includes('/status/')) {
     return res.status(400).json({ error: "Invalid tweet URL" });
@@ -603,26 +648,16 @@ app.get('/api/game/missed-clues/:username', async (req, res) => {
     const gameState = await kv.get('gameState');
     const pioneerHistory = gameState?.pioneerHistory || [];
     
-// Filtrer les fragments que l'utilisateur n'a PAS
-    const missedCluesRaw = pioneerHistory.filter(pioneer => 
+    // Filtrer les fragments que l'utilisateur n'a PAS
+    const missedClues = pioneerHistory.filter(pioneer => 
       !userFragments.includes(pioneer.index)
     );
-    
-    // Ajouter l'info "playedThatDay" pour chaque missed clue
-    const missedClues = [];
-    for (const clue of missedCluesRaw) {
-      const statusKey = `status:${username}:${clue.date}`;
-      const dayStatus = await kv.get(statusKey);
-      missedClues.push({
-        ...clue,
-        playedThatDay: dayStatus?.submitted === true
-      });
-    }
     
     res.json({
       missedClues,
       totalMissed: missedClues.length,
-      userFragments
+      userFragments,
+      gameFrozen: GAME_FROZEN
     });
     
   } catch (err) {
@@ -635,6 +670,15 @@ app.get('/api/game/missed-clues/:username', async (req, res) => {
 app.post('/api/game/unlock-missed', async (req, res) => {
   try {
     const { username, quoteUrl, fragmentIndex, date, catchupPostUrl } = req.body;
+    
+    // ✅ JEUX GELÉ
+    if (GAME_FROZEN) {
+      return res.status(503).json({
+        status: "GAME_FROZEN",
+        error: "Game is frozen - no new fragments can be unlocked",
+        message: "Your existing collection is preserved. We'll announce when the game resumes."
+      });
+    }
     
     if (!quoteUrl || !quoteUrl.includes('/status/')) {
       return res.status(400).json({ error: 'Invalid quote URL' });
@@ -730,7 +774,7 @@ message: `Fragment #${Number(pioneer.index) + 1} unlocked! Character "${pioneer.
 // 5. Get user collection
 app.get('/api/user/collection/:username', async (req, res) => {
   const data = await kv.smembers(`user:collection:${req.params.username}`);
-  res.json({ collection: data || [] });
+  res.json({ collection: data || [], gameFrozen: GAME_FROZEN });
 });
 
 // 6. Get game status
@@ -738,7 +782,9 @@ app.get('/api/game/status', async (req, res) => {
   const gameState = await getGameState();
   res.json({ 
     pioneer: gameState.pioneer,
-    fragmentAvailable: gameState.activeFragmentIndex !== null
+    fragmentAvailable: gameState.activeFragmentIndex !== null,
+    gameFrozen: GAME_FROZEN,
+    frozenMessage: GAME_FROZEN ? "Game is paused. Existing fragments are preserved." : null
   });
 });
 
@@ -773,7 +819,8 @@ app.post('/api/admin/login', async (req, res) => {
     res.json({ 
       success: true,
       token: ADMIN_PASSWORD,
-      message: 'Login successful'
+      message: 'Login successful',
+      gameFrozen: GAME_FROZEN
     });
   } else {
     res.status(401).json({ 
@@ -838,21 +885,11 @@ app.get('/api/admin/all-users', verifyAdmin, async (req, res) => {
     // Trier par nombre de fragments (décroissant)
     users.sort((a, b) => b.fragmentsCount - a.fragmentsCount);
     
-    res.json({ users, count: users.length });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Route admin pour retirer un fragment d'un utilisateur
-app.post('/api/admin/remove-fragment', verifyAdmin, async (req, res) => {
-  try {
-    const { username, fragment } = req.body;
-    if (!username || !fragment) {
-      return res.status(400).json({ error: 'Missing username or fragment' });
-    }
-    const removed = await kv.srem(`user:collection:${username}`, fragment);
-    res.json({ message: `Fragment "${fragment}" removed from ${username}`, removed });
+    res.json({ 
+      users, 
+      count: users.length,
+      gameFrozen: GAME_FROZEN
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -1029,6 +1066,7 @@ app.get('/api/test-alive', (req, res) => {
   res.json({ 
     message: 'Backend alive',
     debugMode: DEBUG_MODE,
+    gameFrozen: GAME_FROZEN,
     env: process.env.DEBUG_MODE 
   });
 }); 
@@ -1102,7 +1140,8 @@ app.get('/api/admin/user-details/:username', verifyAdmin, async (req, res) => {
   streakReal: realStreak,
   streakStatus: streakStatus,
   lastActive: streak?.lastVisit || null,
-  todayStatus: status || null
+  todayStatus: status || null,
+  gameFrozen: GAME_FROZEN
 });
     
   } catch (err) {
@@ -1110,17 +1149,6 @@ app.get('/api/admin/user-details/:username', verifyAdmin, async (req, res) => {
   }
 });
 
-// Route admin pour vérifier le statut d'un joueur à une date précise
-app.get('/api/admin/user-status-date/:username/:date', verifyAdmin, async (req, res) => {
-  try {
-    const { username, date } = req.params;
-    const status = await kv.get(`status:${username}:${date}`);
-    const catchup = await kv.get(`catchup:${username}:${date}`);
-    res.json({ username, date, status, catchup });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 // ============================================
 // ROUTE ADMIN STATS (fonctionne sans DEBUG_MODE)
@@ -1156,6 +1184,7 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
       totalUsers,
       totalFragments,
       todayPioneer: pioneer,
+      gameFrozen: GAME_FROZEN,
       difficulty: {
         messagePoolSize,
         activePlayersYesterday,
@@ -1165,78 +1194,6 @@ app.get('/api/admin/stats', verifyAdmin, async (req, res) => {
     });
 } catch (err) {
     console.error('Admin stats error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Route admin pour les stats hebdomadaires (posts X)
-app.get('/api/admin/weekly-stats', verifyAdmin, async (req, res) => {
-  try {
-    const today = new Date();
-    const stats = [];
-    let totalOriginalPosts = 0;
-    let totalQuotes = 0;
-    let totalCatchups = 0;
-    
-    // Parcourir les 7 derniers jours
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const date = d.toISOString().split('T')[0];
-      
-      const dayKeys = await kv.keys(`status:*:${date}`);
-      let dayPosts = 0;
-      let dayQuotes = 0;
-      
-      for (const key of dayKeys) {
-        const status = await kv.get(key);
-        if (status?.submitted) dayPosts++;
-        if (status?.claimStatus === 'follower') dayQuotes++;
-      }
-      
-      // Catchup posts pour ce jour
-      const catchupKeys = await kv.keys(`catchup:*:${date}`);
-      
-      totalOriginalPosts += dayPosts;
-      totalQuotes += dayQuotes;
-      totalCatchups += catchupKeys.length;
-      
-      stats.push({
-        date,
-        originalPosts: dayPosts,
-        followerQuotes: dayQuotes,
-        catchupPosts: catchupKeys.length
-      });
-    }
-    
-    // Missed clue quotes (depuis pioneer history)
-    const gameState = await kv.get('gameState');
-    const allKeys = await kv.keys('user:collection:*');
-    let totalFragments = 0;
-    for (const key of allKeys) {
-      const col = await kv.smembers(key);
-      if (col) totalFragments += col.filter(i => i !== '_user_registered').length;
-    }
-    
-    const pioneersCount = gameState?.pioneerHistory?.length || 0;
-    const missedClueQuotes = Math.max(0, totalFragments - pioneersCount - totalQuotes);
-    
-    res.json({
-      period: `${stats[0].date} to ${stats[stats.length - 1].date}`,
-      daily: stats,
-      totals: {
-        originalPosts: totalOriginalPosts,
-        followerQuotes: totalQuotes,
-        catchupPosts: totalCatchups,
-        missedClueQuotes: missedClueQuotes,
-        estimatedTotalXPosts: totalOriginalPosts + totalQuotes + totalCatchups + missedClueQuotes
-      },
-      players: {
-        totalRegistered: allKeys.length,
-        pioneersCount: pioneersCount
-      }
-    });
-  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
@@ -1253,7 +1210,8 @@ app.get('/api/admin/winning-message', verifyAdmin, async (req, res) => {
     res.json({
       winningMessageId: gameState?.winningMessageId,
       winningMessage: MASSA_TRUTHS[gameState?.winningMessageId],
-      pioneer: gameState?.pioneer || null
+      pioneer: gameState?.pioneer || null,
+      gameFrozen: GAME_FROZEN
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -1273,7 +1231,8 @@ app.get('/api/admin/pioneer-history', verifyAdmin, async (req, res) => {
     
     res.json({
       pioneerHistory: historyWithMessages,
-      totalRevealed: history.length
+      totalRevealed: history.length,
+      gameFrozen: GAME_FROZEN
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -1577,48 +1536,3 @@ app.post('/api/admin/fix-user-tweet-url', verifyAdmin, async (req, res) => {
 });
 
 export default app;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
