@@ -1534,5 +1534,18 @@ app.post('/api/admin/fix-user-tweet-url', verifyAdmin, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
+app.get('/api/keep-alive', async (req, res) => {
+  try {
+    const gameState = await kv.get('gameState');
+    const userCollections = await kv.keys('user:collection:*');
+    res.json({
+      status: 'alive',
+      timestamp: new Date().toISOString(),
+      usersCount: userCollections.length,
+      hasGameState: !!gameState
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 export default app;
